@@ -1,0 +1,165 @@
+{
+  "name": "jiralens",
+  "icon": "resources/jiralens.png",
+  "displayName": "JiraLens",
+  "description": "A Visual Studio Code (VS Code) extension designed to bridge the gap between your code and the rich information available on Jira.",
+  "categories": [
+    "Other"
+  ],
+  "version": "0.1.0",
+  "author": {
+    "name": "JiraLens",
+    "email": "zihang.jin@gmail.com"
+  },
+  "publisher": "jinzihang",
+  "homepage": "https://marketplace.visualstudio.com/items?itemName=jinzihang.jiralens",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JinZihang/vscode-jiralens"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "vscode-extension",
+    "jira"
+  ],
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "JiraLens",
+      "properties": {
+        "jiralens.jiraHost": {
+          "type": "string",
+          "default": "jira.jiralens.com",
+          "description": "The Jira host."
+        },
+        "jiralens.jiraBearerToken": {
+          "type": "string",
+          "default": "",
+          "description": "The bearer token (personal access token) for Jira authentication."
+        },
+        "jiralens.jiraProjectKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "A list of Jira project keys."
+        },
+        "jiralens.inlineCommitter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the commiter in inline message."
+        },
+        "jiralens.inlineRelativeCommitTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the relative commit time in inline message."
+        },
+        "jiralens.inlineJiraIssueKey": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Jira issue key in inline message."
+        },
+        "jiralens.inlineCommitMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the commit message in inline message."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "jiralens",
+          "title": "JiraLens",
+          "icon": "resources/jiralens.png"
+        }
+      ]
+    },
+    "views": {
+      "jiralens": [
+        {
+          "type": "webview",
+          "id": "jiralens",
+          "name": "JiraLens"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "jiralens.setJiraHost",
+        "title": "Set the Jira Host"
+      },
+      {
+        "command": "jiralens.setJiraBearerToken",
+        "title": "Set the Bearer Token (Personal Access Token) for Jira Authentication"
+      },
+      {
+        "command": "jiralens.addJiraProjectKey",
+        "title": "Add a Jira Project Key"
+      },
+      {
+        "command": "jiralens.deleteJiraProjectKey",
+        "title": "Delete a Jira Project Key"
+      },
+      {
+        "command": "jiralens.setShowInlineCommitter",
+        "title": "Set Whether to Show the Committer in Inline Message"
+      },
+      {
+        "command": "jiralens.setShowRelativeCommitTime",
+        "title": "Set Whether to Show the Relative Commit Time in Inline Message"
+      },
+      {
+        "command": "jiralens.setShowJiraIssueKey",
+        "title": "Set Whether to Show the Jira Issue Key in Inline Message"
+      },
+      {
+        "command": "jiralens.setShowCommitMessage",
+        "title": "Set Whether to Show the Commit Message in Inline Message"
+      },
+      {
+        "command": "jiralens.statusBarItemActive",
+        "title": "The Command to Run When the Status Bar Item Is Clicked"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "lint": "eslint src --ext ts",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "format": "prettier --write './**/*.{js,ts,md,json}' --config ./.prettierrc"
+  },
+  "dependencies": {
+    "jira-client": "^8.2.2"
+  },
+  "devDependencies": {
+    "@types/jira-client": "^7.1.8",
+    "@types/mocha": "^10.0.3",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "@vscode/test-electron": "^2.3.6",
+    "eslint": "^8.52.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "prettier": "^3.0.3",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
