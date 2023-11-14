@@ -63,5 +63,6 @@ After developing and testing your changes, create a pull request on GitHub to me
 - Introduce cache to store recently loaded issue information
 - Handle the markdowns from JiraApi properly (e.g. links, bullet points, images)
 - Allow opening the corresponding issue tab from the hover modal directly
+- Implement a sidebar view that shows the Jira issue timeline of the active file
 - Implement [vscode-webview-ui-toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit)
 - Implement tests and set up pipelines to run them for every pull request
