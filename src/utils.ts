@@ -19,7 +19,7 @@ export function isValidUrl(url: string): boolean {
 }
 
 export function isValidJiraProjectKey(key: string): boolean {
-  const regex = /^[A-Z]+$/;
+  const regex = /^[A-Z0-9]+$/;
   return regex.test(key);
 }
 

@@ -82,11 +82,12 @@ function registerAddJiraProjectKeyCommand(): vscode.Disposable {
     if (!keyInput) {
       return;
     }
-    if (!isValidJiraProjectKey(keyInput)) {
+    const key = keyInput.toUpperCase();
+    if (!isValidJiraProjectKey(key)) {
       vscode.window.showErrorMessage('Invalid project key input.');
       return;
     }
-    addJiraProjectKey(keyInput);
+    addJiraProjectKey(key);
   });
 }
 
@@ -99,11 +100,12 @@ function registerDeleteJiraProjectKeyCommand(): vscode.Disposable {
     if (!keyInput) {
       return;
     }
-    if (!isValidJiraProjectKey(keyInput)) {
+    const key = keyInput.toUpperCase();
+    if (!isValidJiraProjectKey(key)) {
       vscode.window.showErrorMessage('Invalid project key input.');
       return;
     }
-    deleteJiraProjectKey(keyInput);
+    deleteJiraProjectKey(key);
   });
 }
 
