@@ -11,7 +11,8 @@ export function getJiraIssueKey(commitMessage: string): string {
   const projectKeys = getJiraProjectKeys();
   // Expect every commit message to contain only one Jira issue key
   for (const key of projectKeys) {
-    const regex = new RegExp(`${key}-\\d+`, 'g');
+    // Examples: JRL-123, JRL12345
+    const regex = new RegExp(`${key}-?\\d+`, 'g');
     const matches = commitMessage.match(regex);
     if (matches && matches.length > 0) {
       return matches[0];
