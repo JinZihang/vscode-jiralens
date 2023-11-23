@@ -57,6 +57,21 @@ function getRelativeTimePassed(curr: number, prev: number): string {
   return `${value} ${unit}${plural} ago`;
 }
 
+function truncateMessage(message: string): string {
+  const lengthLimit = 30;
+  if (message.length < lengthLimit) {
+    return message;
+  }
+  const words = message.split(' ');
+  let truncatedMessage = '';
+  let i = 0;
+  while (truncatedMessage.length + words[i].length < lengthLimit) {
+    truncatedMessage += `${words[i]} `;
+    i++;
+  }
+  return `${truncatedMessage.trim()}...`;
+}
+
 export function getInlineMessage(gitBlameInfo: GitBlameInfo): string {
   if (gitBlameInfo.author === 'Not Committed Yet') {
     return 'Not committed yet';
@@ -79,8 +94,9 @@ export function getInlineMessage(gitBlameInfo: GitBlameInfo): string {
       messages.push(jiraIssueKey);
     }
   }
+  const truncatedCommitMessage = truncateMessage(commitMessage);
   if (getShowInlineCommitMessage()) {
-    messages.push(commitMessage);
+    messages.push(truncatedCommitMessage);
   }
   return messages.length ? messages.join(' • ') : '';
 }

@@ -59,7 +59,6 @@ After developing and testing your changes, create a pull request on GitHub to me
 ## TODOs
 
 - Handle the issue that certain configuration constraints (e.g. project key patterns) are not applied if users edit settings through the VS Code setting editor UI
-- Limit the length of the commit message displayed in inline messages
 - Reduce the number of JiraApi calls by sharing the retrieved issue content at different UI components' functions
 - Introduce cache to store recently loaded issue information
 - Handle the markdowns from JiraApi properly (e.g. links, bullet points, images)
