@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
 import JiraApi from 'jira-client';
+import { DOMSerializer } from 'prosemirror-model';
+import { defaultSchema } from '@atlaskit/adf-schema/schema-default';
+import { WikiMarkupTransformer } from '@atlaskit/editor-wikimarkup-transformer';
+import { JSDOM } from 'jsdom';
 import { getJiraBearerToken, getJiraHost, getJiraProjectKeys } from './configs';
 import {
   getLoadingWebviewContent,
   getNoJiraIssueWebviewContent,
-  getWebviewContent
+  getWebviewContent,
+  isValidUrl
 } from './utils';
 
 export function getJiraIssueKey(commitMessage: string): string {
@@ -55,6 +60,20 @@ export async function getJiraIssueContent(
   return issueContent;
 }
 
+export function convertJiraMarkdownToHtml(markdown: string): string {
+  const transformer = new WikiMarkupTransformer();
+  const pmNode = transformer.parse(markdown);
+  const dom = new JSDOM();
+  const document = dom.window.document;
+  const target = document.createElement('div');
+  const html = DOMSerializer.fromSchema(defaultSchema).serializeFragment(
+    pmNode.content,
+    { document },
+    target
+  ) as HTMLElement;
+  return html.outerHTML;
+}
+
 export function getHoverModalMarkdown(
   issueKey: string,
   issueContent: JiraApi.JsonResponse
@@ -73,13 +92,11 @@ export function getHoverModalMarkdown(
     </tr>
     <tr>
       <td>
-        <p>
-          ${
-            issueContent.description
-              ? issueContent.description
-              : 'No description available'
-          }
-        </p>
+        ${
+          issueContent.description
+            ? convertJiraMarkdownToHtml(issueContent.description)
+            : 'No description available'
+        }
       </td>
     </tr>
   </table>
