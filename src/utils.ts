@@ -6,7 +6,7 @@ import {
   getShowInlineJiraIssueKey,
   getShowInlineRelativeCommitTime
 } from './configs';
-import { getJiraIssueKey } from './jira';
+import { convertJiraMarkdownToHtml, getJiraIssueKey } from './jira';
 import { GitBlameInfo } from './types';
 
 export function isValidUrl(url: string): boolean {
@@ -308,7 +308,7 @@ export function getWebviewContent(
       <h3>Description</h3>
       <hr />
       <div id="issue-description">
-        <p>${jiraIssueContent.fields.description}</p>
+        ${convertJiraMarkdownToHtml(jiraIssueContent.fields.description)}
       </div>
       <h3>Attachments</h3>
       <hr />
@@ -337,7 +337,7 @@ export function getWebviewContent(
                 <tr>
                   <td>${comment.author?.displayName}</td>
                   <td>${new Date(comment?.updated).toLocaleDateString()}</td>
-                  <td>${comment?.body}</td>
+                  <td>${convertJiraMarkdownToHtml(comment?.body)}</td>
                 </tr>`
             )
             .join('')}

@@ -143,10 +143,15 @@
     "format": "prettier --write './**/*.{js,ts,md,json}' --config ./.prettierrc"
   },
   "dependencies": {
-    "jira-client": "^8.2.2"
+    "@atlaskit/adf-schema": "^35.4.0",
+    "@atlaskit/editor-wikimarkup-transformer": "^11.2.34",
+    "jira-client": "^8.2.2",
+    "jsdom": "^24.0.0",
+    "prosemirror-model": "^1.19.4"
   },
   "devDependencies": {
     "@types/jira-client": "^7.1.8",
+    "@types/jsdom": "^21.1.6",
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
     "@types/vscode": "^1.83.0",
