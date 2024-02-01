@@ -184,10 +184,9 @@ export function getWebviewContent(
         }" />
         <div class="header-info">
             <p>
-              ${jiraIssueContent.fields.project
-                ?.name} / <a href="${jiraIssueLink}"> ${
-                jiraIssueContent.key
-              }</a>
+              ${
+                jiraIssueContent.fields.project?.name
+              } / <a href="${jiraIssueLink}"> ${jiraIssueContent.key}</a>
             </p>
             <h2>${jiraIssueContent.fields.summary}</h2>
         </div>
@@ -268,8 +267,9 @@ export function getWebviewContent(
       <hr />
       <div id="profiles">
         <div class="profile">
-          <img class="user-avatar" src="${jiraIssueContent.fields.assignee
-            ?.avatarUrls['48x48']}" alt="Issue Assignee">
+          <img class="user-avatar" src="${
+            jiraIssueContent.fields.assignee?.avatarUrls['48x48']
+          }" alt="Issue Assignee">
           <div>
             <p>Assignee: ${
               jiraIssueContent.fields.assignee?.displayName
@@ -277,16 +277,18 @@ export function getWebviewContent(
                 : 'Not assigned'
             }</p>
             <p>Email: 
-              <a href="mailto: ${jiraIssueContent.fields.assignee
-                ?.emailAddress}">
+              <a href="mailto: ${
+                jiraIssueContent.fields.assignee?.emailAddress
+              }">
                 ${jiraIssueContent.fields.assignee?.emailAddress}
               </a>
             </p>
           </div>
         </div>
         <div class="profile">
-          <img class="user-avatar" src="${jiraIssueContent.fields.reporter
-            ?.avatarUrls['48x48']}" alt="Issue Reporter">
+          <img class="user-avatar" src="${
+            jiraIssueContent.fields.reporter?.avatarUrls['48x48']
+          }" alt="Issue Reporter">
           <div>
             <p>Reporter: ${
               jiraIssueContent.fields.reporter?.displayName
@@ -294,8 +296,9 @@ export function getWebviewContent(
                 : '&nbsp'
             }</p>
             <p>Email: 
-              <a href="mailto: ${jiraIssueContent.fields.reporter
-                ?.emailAddress}">
+              <a href="mailto: ${
+                jiraIssueContent.fields.reporter?.emailAddress
+              }">
                 ${jiraIssueContent.fields.reporter?.emailAddress}
               </a>
             </p>
