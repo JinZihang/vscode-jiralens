@@ -20,7 +20,6 @@ let statusBarItem: vscode.StatusBarItem;
 let webviewProvider: JiraViewProvider;
 
 let inlineMessageEditor: vscode.TextEditor;
-let activeLine: vscode.TextLine;
 const inlineMessageDecorationType =
   vscode.window.createTextEditorDecorationType({
     after: {
@@ -35,6 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
   registerStatusBarItemActiveCommand();
   initStatusBarItem();
   initWebview();
+  bindEventListeners();
 }
 
 // Staus bar item functions
@@ -92,12 +92,6 @@ function initStatusBarItem(): void {
   );
   statusBarItem.command = STAUTS_BAR_ITEM_ACTIVE;
   globalContext.subscriptions.push(statusBarItem);
-  globalContext.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(onTextEditorChange)
-  );
-  globalContext.subscriptions.push(
-    vscode.window.onDidChangeTextEditorSelection(onTextEditorChange)
-  );
 }
 function renderStatusBarItem(jiraIssueKey: string): void {
   if (!jiraIssueKey) {
@@ -116,19 +110,29 @@ async function renderInlineMessage(
   gitBlameCommandInfo: GitBlameCommandInfo,
   jiraIssueKey: string
 ): Promise<void> {
-  const { gitBlameInfo, line } = gitBlameCommandInfo;
-  inlineMessageEditor = gitBlameCommandInfo.editor;
-  activeLine = line;
+  const { gitBlameInfo, editor, line } = gitBlameCommandInfo;
   const message = getInlineMessage(gitBlameInfo);
-  if (!message) {
+  // Ensure the line has not changed since running the git command
+  let activeEditor = vscode.window.activeTextEditor;
+  if (
+    !message ||
+    !activeEditor ||
+    activeEditor !== editor ||
+    activeEditor.selection.active.line !== line.lineNumber
+  ) {
     hideInlineMessage();
     return;
   }
-  const range = new vscode.Range(
-    line.lineNumber,
-    line.text.length,
-    line.lineNumber,
-    line.text.length + message.length
+  inlineMessageEditor = activeEditor;
+  let activeLine = activeEditor.document.lineAt(
+    activeEditor.selection.active.line
+  );
+  // Render using the latest information since the length of the line could have changed
+  let range = new vscode.Range(
+    activeLine.lineNumber,
+    activeLine.text.length,
+    activeLine.lineNumber,
+    activeLine.text.length + message.length
   );
   const renderOptions = { after: { contentText: message } };
   let hoverMessage: string | vscode.MarkdownString | undefined;
@@ -145,10 +149,25 @@ async function renderInlineMessage(
         jiraIssueContent.fields
       );
     }
-    const newDecorations = [{ range, renderOptions, hoverMessage }];
-    if (activeLine !== line) {
+    // Ensure the line has not changed since running the git command
+    activeEditor = vscode.window.activeTextEditor;
+    if (
+      !activeEditor ||
+      activeEditor !== editor ||
+      activeEditor.selection.active.line !== line.lineNumber
+    ) {
       return;
     }
+    activeLine = activeEditor.document.lineAt(
+      activeEditor.selection.active.line
+    );
+    range = new vscode.Range(
+      activeLine.lineNumber,
+      activeLine.text.length,
+      activeLine.lineNumber,
+      activeLine.text.length + message.length
+    );
+    const newDecorations = [{ range, renderOptions, hoverMessage }];
     inlineMessageEditor.setDecorations(
       inlineMessageDecorationType,
       newDecorations
@@ -189,7 +208,7 @@ async function renderWebview(jiraIssueKey: string): Promise<void> {
   );
 }
 
-function onTextEditorChange(): void {
+function onChange(): void {
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (gitBlameCommandInfo) {
@@ -210,4 +229,11 @@ function onTextEditorChange(): void {
       hideInlineMessage();
       renderWebview('');
     });
+}
+function bindEventListeners(): void {
+  globalContext.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(onChange),
+    vscode.window.onDidChangeTextEditorSelection(onChange),
+    vscode.workspace.onDidChangeTextDocument(onChange)
+  );
 }
