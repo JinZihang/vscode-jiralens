@@ -104,13 +104,17 @@ export function getHoverModalMarkdown(
 
   markdown.appendMarkdown(`---\n`);
 
-  markdown.appendMarkdown(
-    `Assignee: [${
-      issueContent.assignee.displayName
-    }](https://${getJiraHost()}/secure/ViewProfile.jspa?name=${
-      issueContent.assignee.name
-    }&selectedTab=jira.user.profile.panels:user-profile-summary-panel)${indent}|${indent}`
-  );
+  if (issueContent.assignee) {
+    markdown.appendMarkdown(
+      `Assignee: [${
+        issueContent.assignee.displayName
+      }](https://${getJiraHost()}/secure/ViewProfile.jspa?name=${
+        issueContent.assignee.name
+      }&selectedTab=jira.user.profile.panels:user-profile-summary-panel)${indent}|${indent}`
+    );
+  } else {
+    markdown.appendMarkdown(`Assignee: Unassigned${indent}|${indent}`);
+  }
 
   markdown.appendMarkdown(
     `Status: [${issueContent.status.name}](${issueLink})${indent}|${indent}`

@@ -267,42 +267,52 @@ export function getWebviewContent(
       <hr />
       <div id="profiles">
         <div class="profile">
-          <img class="user-avatar" src="${
-            jiraIssueContent.fields.assignee?.avatarUrls['48x48']
-          }" alt="Issue Assignee">
-          <div>
-            <p>Assignee: ${
-              jiraIssueContent.fields.assignee?.displayName
-                ? jiraIssueContent.fields.assignee?.displayName
-                : 'Not assigned'
-            }</p>
-            <p>Email: 
-              <a href="mailto: ${
-                jiraIssueContent.fields.assignee?.emailAddress
-              }">
-                ${jiraIssueContent.fields.assignee?.emailAddress}
-              </a>
-            </p>
-          </div>
+        ${(() => {
+          const assignee = jiraIssueContent.fields.assignee;
+          if (assignee) {
+            return `<img class="user-avatar" src="${assignee.avatarUrls['48x48']}" alt="Issue Assignee">
+            <div>
+              <p>Assignee: ${assignee.displayName}</p>
+              <p>Email: 
+                <a href="mailto: ${assignee.emailAddress}">
+                  ${assignee.emailAddress}
+                </a>
+              </p>
+            </div>
+            `;
+          } else {
+            return `
+            <img class="user-avatar" src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default?size=48&s=48" alt="Issue Assignee">
+            <div>
+              <p>Assignee: Unassgined</p>
+            </div>
+            `;
+          }
+        })()}
         </div>
         <div class="profile">
-          <img class="user-avatar" src="${
-            jiraIssueContent.fields.reporter?.avatarUrls['48x48']
-          }" alt="Issue Reporter">
-          <div>
-            <p>Reporter: ${
-              jiraIssueContent.fields.reporter?.displayName
-                ? jiraIssueContent.fields.reporter?.displayName
-                : '&nbsp'
-            }</p>
-            <p>Email: 
-              <a href="mailto: ${
-                jiraIssueContent.fields.reporter?.emailAddress
-              }">
-                ${jiraIssueContent.fields.reporter?.emailAddress}
-              </a>
-            </p>
-          </div>
+        ${(() => {
+          const reporter = jiraIssueContent.fields.reporter;
+          if (reporter) {
+            return `<img class="user-avatar" src="${reporter.avatarUrls['48x48']}" alt="Issue Reporter">
+            <div>
+              <p>Reporter: ${reporter.displayName}</p>
+              <p>Email: 
+                <a href="mailto: ${reporter.emailAddress}">
+                  ${reporter.emailAddress}
+                </a>
+              </p>
+            </div>
+            `;
+          } else {
+            return `
+            <img class="user-avatar" src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default?size=48&s=48" alt="Issue Reporter">
+            <div>
+              <p>Reporter: Unassgined</p>
+            </div>
+            `;
+          }
+        })()}
         </div>
       </div>
       <h3>Description</h3>
