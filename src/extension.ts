@@ -110,7 +110,7 @@ async function renderInlineMessage(
   gitBlameCommandInfo: GitBlameCommandInfo,
   jiraIssueKey: string
 ): Promise<void> {
-  const { gitBlameInfo, editor, line } = gitBlameCommandInfo;
+  const { gitBlameInfo, editor, lineNumber } = gitBlameCommandInfo;
   const message = getInlineMessage(gitBlameInfo);
   // Ensure the line has not changed since running the git command
   let activeEditor = vscode.window.activeTextEditor;
@@ -118,15 +118,13 @@ async function renderInlineMessage(
     !message ||
     !activeEditor ||
     activeEditor !== editor ||
-    activeEditor.selection.active.line !== line.lineNumber
+    activeEditor.selection.active.line !== lineNumber
   ) {
     hideInlineMessage();
     return;
   }
   inlineMessageEditor = activeEditor;
-  let activeLine = activeEditor.document.lineAt(
-    activeEditor.selection.active.line
-  );
+  let activeLine = activeEditor.document.lineAt(lineNumber);
   // Render using the latest information since the length of the line could have changed
   let range = new vscode.Range(
     activeLine.lineNumber,
@@ -154,13 +152,11 @@ async function renderInlineMessage(
     if (
       !activeEditor ||
       activeEditor !== editor ||
-      activeEditor.selection.active.line !== line.lineNumber
+      activeEditor.selection.active.line !== lineNumber
     ) {
       return;
     }
-    activeLine = activeEditor.document.lineAt(
-      activeEditor.selection.active.line
-    );
+    activeLine = activeEditor.document.lineAt(lineNumber);
     range = new vscode.Range(
       activeLine.lineNumber,
       activeLine.text.length,

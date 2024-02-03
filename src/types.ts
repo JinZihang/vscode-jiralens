@@ -17,6 +17,6 @@ export type GitBlameInfo = {
 
 export type GitBlameCommandInfo = {
   editor: vscode.TextEditor;
-  line: vscode.TextLine;
+  lineNumber: number;
   gitBlameInfo: GitBlameInfo;
 };
