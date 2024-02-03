@@ -213,11 +213,11 @@ function onChange(): void {
         renderStatusBarItem(jiraIssueKey);
         renderInlineMessage(gitBlameCommandInfo, jiraIssueKey);
         renderWebview(jiraIssueKey);
-        return;
+      } else {
+        hideStatusBarItem();
+        hideInlineMessage();
+        renderWebview('');
       }
-      hideStatusBarItem();
-      hideInlineMessage();
-      renderWebview('');
     })
     .catch((error) => {
       console.error('runGitBlameCommand error: ', error.message);
