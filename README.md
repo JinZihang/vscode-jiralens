@@ -69,7 +69,11 @@ Set Whether to Show the Commit Message in Inline Message
 
 ## Extension Setup
 
-To ensure proper functionality, JiraLens requires configuration of the Jira host, the Jira authentication token, and project keys. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
+To ensure proper functionality, JiraLens requires the Jira host, the Jira authentication token, and project keys to be configured. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
+
+You can customize the extension settings either using the VS Code settings editor or by utilizing the commands mentioned above.
+
+![extension-settings.png](resources/readme/extension-settings.png)
 
 ### Jira Host
 
