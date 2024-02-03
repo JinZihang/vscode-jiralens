@@ -25,27 +25,24 @@ export async function runGitBlameCommand(): Promise<
     return;
   }
   const currentFile = editor.document.uri;
-  const currentLine = editor.document.lineAt(editor.selection.active.line);
-  const lineNumber = currentLine.lineNumber;
+  const lineNumber = editor.selection.active.line;
   const commandArguments = [
     'blame',
     '--porcelain',
     `-L${lineNumber + 1},+1`,
     currentFile.fsPath
   ];
-
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile);
   if (!workspaceFolder) {
     return;
   }
   const workspaceFolderPath = workspaceFolder?.uri.fsPath;
   const commandOptions = { cwd: workspaceFolderPath };
-
   return new Promise((resolve, reject) => {
     const gitBlameCommand = cp.spawn('git', commandArguments, commandOptions);
     gitBlameCommand.stdout.on('data', (response) => {
       const gitBlameInfo = parseGitBlameResponse(response.toString());
-      resolve({ gitBlameInfo, editor, line: currentLine });
+      resolve({ gitBlameInfo, editor, lineNumber });
     });
     gitBlameCommand.stderr.on('error', (error) => {
       reject(error);
