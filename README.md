@@ -69,7 +69,11 @@ Set Whether to Show the Commit Message in Inline Message
 
 ## Extension Setup
 
-To ensure proper functionality, JiraLens requires configuration of the Jira host, the Jira authentication token, and project keys. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
+To ensure proper functionality, JiraLens requires the Jira host, the Jira authentication token, and project keys to be configured. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
+
+You can customize the extension settings either using the VS Code settings editor or by utilizing the commands mentioned above.
+
+![extension-settings.png](resources/readme/extension-settings.png)
 
 ### Jira Host
 
@@ -84,3 +88,6 @@ Navigate to your Jira profile page, access the Personal Access Tokens tab, and g
 Refer to [this documentation](https://support.atlassian.com/jira-software-cloud/docs/what-is-an-issue/) for the definition of Jira issue key and Jira project key. If an issue's key is `JRL-123`, then its corresponding project key is `JRL`.
 
 ## Known Issues
+
+1. Some Jira markdowns like colored texts cannot be rendered, when they exist in the content, Jira issue details will stuck at loading.
+2. After forward-deleting to pull the next line to the current line, it takes a short while for the inline message to udpdate its position.
