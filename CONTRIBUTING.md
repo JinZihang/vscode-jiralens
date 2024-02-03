@@ -36,11 +36,13 @@ git checkout -b <new-branch-name>
 
 #### Categories
 
-- `feature`: introduce new logic or features
+These categories aim to assit the community in quickly grasping the intent of your branch. Feel free to use alternative category names that align with your changes.
+
+- `feat`: introduce new logic or features
 - `fix`: address reported issues or bugs
-- `refactor`: code formatting or file architecture changes
-- `performance`: performance improvements
-- `documentation`: documentation updates
+- `ref`: code formatting or file architecture changes
+- `perf`: performance improvements
+- `doc`: documentation updates
 
 ### Follow Development Best Practices
 
