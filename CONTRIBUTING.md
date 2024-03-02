@@ -38,11 +38,11 @@ git checkout -b <new-branch-name>
 
 These categories aim to assit the community in quickly grasping the intent of your branch. Feel free to use alternative category names that align with your changes.
 
-- `feat`: introduce new logic or features
+- `feat`: introduce new features
+- `test`: test-related changes
 - `fix`: address reported issues or bugs
-- `ref`: code formatting or file architecture changes
-- `perf`: performance improvements
-- `doc`: documentation updates
+- `ref`: neither a feature nor a fix
+- `doc`: documentation-only updates
 
 ### Follow Development Best Practices
 
