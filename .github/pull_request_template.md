@@ -14,5 +14,4 @@
 
 - [ ] No commit includes credentials or sensitive information
 - [ ] Changes have been tested locally
-- [ ] Relevant documentations have been updated
-- [ ] Codes have been formatted with `npm run format`
+- [ ] Relevant documentations have been updated, or documentation updates are not applicable for this change
