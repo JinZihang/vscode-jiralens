@@ -18,7 +18,7 @@
     "curly": "warn",
     "eqeqeq": "warn",
     "no-throw-literal": "warn",
-    "semi": "off"
+    "no-unused-vars": "warn"
   },
   "ignorePatterns": ["node_modules", "**/*.d.ts", "out", "dist"]
 }

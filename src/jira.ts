@@ -8,8 +8,7 @@ import { getJiraBearerToken, getJiraHost, getJiraProjectKeys } from './configs';
 import {
   getLoadingWebviewContent,
   getNoJiraIssueWebviewContent,
-  getWebviewContent,
-  isValidUrl
+  getWebviewContent
 } from './utils';
 
 export function getJiraIssueKey(commitMessage: string): string {
@@ -202,9 +201,7 @@ export class JiraViewProvider implements vscode.WebviewViewProvider {
   }
 
   public async resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
+    webviewView: vscode.WebviewView
   ): Promise<void> {
     this._view = webviewView;
     webviewView.webview.options = {
