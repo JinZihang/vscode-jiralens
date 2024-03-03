@@ -25,25 +25,31 @@ export default class InlineMessage {
     return InlineMessage._instance;
   }
 
+  private hasTargetLineChanged(
+    editor: vscode.TextEditor,
+    lineNumber: number
+  ): boolean {
+    const activeEditor = vscode.window.activeTextEditor;
+    return (
+      !activeEditor ||
+      activeEditor !== editor ||
+      activeEditor.selection.active.line !== lineNumber
+    );
+  }
+
   async renderInlineMessage(
     gitBlameCommandInfo: GitBlameCommandInfo,
     jiraIssueKey: string
   ): Promise<void> {
     const { gitBlameInfo, editor, lineNumber } = gitBlameCommandInfo;
     const message = getInlineMessage(gitBlameInfo);
-    // Ensure the line has not changed since running the git command
-    let activeEditor = vscode.window.activeTextEditor;
-    if (
-      !message ||
-      !activeEditor ||
-      activeEditor !== editor ||
-      activeEditor.selection.active.line !== lineNumber
-    ) {
+    // Ensure the target line has not changed since calling runGitBlameCommand()
+    if (!message || this.hasTargetLineChanged(editor, lineNumber)) {
       this.hideInlineMessage();
       return;
     }
-    this._inlineMessageEditor = activeEditor;
-    let activeLine = activeEditor.document.lineAt(lineNumber);
+    this._inlineMessageEditor = vscode.window.activeTextEditor!;
+    let activeLine = this._inlineMessageEditor.document.lineAt(lineNumber);
     // Render using the latest information since the length of the line could have changed
     let range = new vscode.Range(
       activeLine.lineNumber,
@@ -52,45 +58,43 @@ export default class InlineMessage {
       activeLine.text.length + message.length
     );
     const renderOptions = { after: { contentText: message } };
-    let hoverMessage: string | vscode.MarkdownString | undefined;
-    if (jiraIssueKey) {
-      hoverMessage = 'Loading Jira information...';
-    }
-    const decorations = [{ range, renderOptions, hoverMessage }];
-    this._inlineMessageEditor.setDecorations(
-      this._inlineMessageDecorationType,
-      decorations
-    );
-    if (jiraIssueKey) {
-      const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
-      if (jiraIssueContent) {
-        hoverMessage = getHoverModalMarkdown(
-          jiraIssueKey,
-          jiraIssueContent.fields
-        );
-      }
-      // Ensure the line has not changed since running the git command
-      activeEditor = vscode.window.activeTextEditor;
-      if (
-        !activeEditor ||
-        activeEditor !== editor ||
-        activeEditor.selection.active.line !== lineNumber
-      ) {
-        return;
-      }
-      activeLine = activeEditor.document.lineAt(lineNumber);
-      range = new vscode.Range(
-        activeLine.lineNumber,
-        activeLine.text.length,
-        activeLine.lineNumber,
-        activeLine.text.length + message.length
-      );
-      const newDecorations = [{ range, renderOptions, hoverMessage }];
+    if (!jiraIssueKey) {
       this._inlineMessageEditor.setDecorations(
         this._inlineMessageDecorationType,
-        newDecorations
+        [{ range, renderOptions }]
+      );
+      return;
+    }
+    let hoverMessage = new vscode.MarkdownString('Loading Jira information...');
+    this._inlineMessageEditor.setDecorations(
+      this._inlineMessageDecorationType,
+      [{ range, renderOptions, hoverMessage }]
+    );
+    const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
+    if (jiraIssueContent) {
+      hoverMessage = getHoverModalMarkdown(
+        jiraIssueKey,
+        jiraIssueContent.fields
       );
     }
+    // Ensure the target line has not changed since running getJiraIssueContent()
+    if (this.hasTargetLineChanged(editor, lineNumber)) {
+      return;
+    }
+    this._inlineMessageEditor = vscode.window.activeTextEditor!;
+    activeLine = this._inlineMessageEditor.document.lineAt(lineNumber);
+    // Render using the latest information since the length of the line could have changed
+    range = new vscode.Range(
+      activeLine.lineNumber,
+      activeLine.text.length,
+      activeLine.lineNumber,
+      activeLine.text.length + message.length
+    );
+    const newDecorations = [{ range, renderOptions, hoverMessage }];
+    this._inlineMessageEditor.setDecorations(
+      this._inlineMessageDecorationType,
+      newDecorations
+    );
   }
 
   hideInlineMessage(): void {
