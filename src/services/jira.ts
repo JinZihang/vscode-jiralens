@@ -4,12 +4,16 @@ import { DOMSerializer } from 'prosemirror-model';
 import { defaultSchema } from '@atlaskit/adf-schema/schema-default';
 import { WikiMarkupTransformer } from '@atlaskit/editor-wikimarkup-transformer';
 import { JSDOM } from 'jsdom';
-import { getJiraBearerToken, getJiraHost, getJiraProjectKeys } from './configs';
+import {
+  getJiraBearerToken,
+  getJiraHost,
+  getJiraProjectKeys
+} from '../configs';
 import {
   getLoadingWebviewContent,
   getNoJiraIssueWebviewContent,
   getWebviewContent
-} from './utils';
+} from '../utils';
 
 export function getJiraIssueKey(commitMessage: string): string {
   const projectKeys = getJiraProjectKeys();

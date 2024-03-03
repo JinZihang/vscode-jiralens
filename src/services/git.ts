@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
-import { GitBlameInfo, GitBlameCommandInfo } from './types';
+import { GitBlameInfo, GitBlameCommandInfo } from './git.types';
 
 function parseGitBlameResponse(blame: string): GitBlameInfo {
   const lines = blame.trim().split('\n');

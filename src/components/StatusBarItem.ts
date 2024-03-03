@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { STAUTS_BAR_ITEM_ACTIVE } from '../commands';
 import Extension from './Extension';
-import { getJiraIssueContent, getJiraIssueLink } from '../jira';
+import { getJiraIssueContent, getJiraIssueLink } from '../services/jira';
 import { getLoadingWebviewContent, getWebviewContent } from '../utils';
 
 export default class StatusBarItem {

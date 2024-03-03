@@ -4,8 +4,8 @@ import Extension from './components/Extension';
 import StatusBarItem from './components/StatusBarItem';
 import InlineMessage from './components/InlineMessage';
 import Webview from './components/Webview';
-import { runGitBlameCommand } from './git';
-import { getJiraIssueKey } from './jira';
+import { runGitBlameCommand } from './services/git';
+import { getJiraIssueKey } from './services/jira';
 
 export function activate(context: vscode.ExtensionContext): void {
   new Extension(context);

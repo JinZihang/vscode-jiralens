@@ -4,7 +4,7 @@ import {
   JiraViewProvider,
   getJiraIssueContent,
   getJiraIssueLink
-} from '../jira';
+} from '../services/jira';
 
 export default class Webview {
   private static _instance: Webview;

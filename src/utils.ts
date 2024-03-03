@@ -6,8 +6,8 @@ import {
   getShowInlineJiraIssueKey,
   getShowInlineRelativeCommitTime
 } from './configs';
-import { convertJiraMarkdownToHtml, getJiraIssueKey } from './jira';
-import { GitBlameInfo } from './types';
+import { convertJiraMarkdownToHtml, getJiraIssueKey } from './services/jira';
+import { GitBlameInfo } from './services/git.types';
 
 export function isValidUrl(url: string): boolean {
   try {

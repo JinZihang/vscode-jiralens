@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { getHoverModalMarkdown, getJiraIssueContent } from '../jira';
+import { getHoverModalMarkdown, getJiraIssueContent } from '../services/jira';
 import { getInlineMessage } from '../utils';
-import { GitBlameCommandInfo } from '../types';
+import { GitBlameCommandInfo } from '../services/git.types';
 
 export default class InlineMessage {
   private static _instance: InlineMessage;

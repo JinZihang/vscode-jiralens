@@ -10,7 +10,7 @@ import {
   setShowInlineCommitter,
   setShowInlineRelativeCommitTime
 } from './configs';
-import { isValidJiraBearerToken } from './jira';
+import { isValidJiraBearerToken } from './services/jira';
 import { isValidUrl, isValidJiraProjectKey } from './utils';
 
 // The command IDs here must match the command field in package.json
