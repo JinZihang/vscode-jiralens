@@ -3,56 +3,28 @@ import { registerCommands } from './commands';
 import Extension from './components/Extension';
 import StatusBarItem from './components/StatusBarItem';
 import InlineMessage from './components/InlineMessage';
+import Webview from './components/Webview';
 import { runGitBlameCommand } from './git';
-import {
-  getJiraIssueKey,
-  getJiraIssueLink,
-  JiraViewProvider,
-  getJiraIssueContent
-} from './jira';
-
-let globalContext: vscode.ExtensionContext;
-let webviewProvider: JiraViewProvider;
+import { getJiraIssueKey } from './jira';
 
 export function activate(context: vscode.ExtensionContext): void {
-  let extension = new Extension(context);
-  globalContext = extension.getContext();
-  registerCommands(globalContext);
-  initWebview();
-  bindEventListeners();
+  new Extension(context);
+  registerCommands(context);
+  bindEventListeners(context);
 }
 
-// Webview functions
-function initWebview(): void {
-  webviewProvider = new JiraViewProvider(globalContext.extensionUri);
-  globalContext.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      JiraViewProvider.viewType,
-      webviewProvider
-    )
-  );
-}
-async function renderWebview(jiraIssueKey: string): Promise<void> {
-  if (!jiraIssueKey) {
-    webviewProvider.setNoJiraIssueView();
-    return;
-  }
-  if (webviewProvider.getCurrentIssueKey() === jiraIssueKey) {
-    return;
-  }
-  webviewProvider.setLoadingView();
-  const jiraIssueLink = getJiraIssueLink(jiraIssueKey);
-  const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
-  webviewProvider.setJiraIssueView(
-    jiraIssueKey,
-    jiraIssueLink,
-    jiraIssueContent
+function bindEventListeners(context: vscode.ExtensionContext): void {
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(onChange),
+    vscode.window.onDidChangeTextEditorSelection(onChange),
+    vscode.workspace.onDidChangeTextDocument(onChange)
   );
 }
 
 function onChange(): void {
   const statusBarItem = StatusBarItem.getInstance();
   const inlineMessage = InlineMessage.getInstance();
+  const webview = Webview.getInstance();
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (gitBlameCommandInfo) {
@@ -60,24 +32,17 @@ function onChange(): void {
         const jiraIssueKey = getJiraIssueKey(commitMessage);
         statusBarItem.renderStatusBarItem(jiraIssueKey);
         inlineMessage.renderInlineMessage(gitBlameCommandInfo, jiraIssueKey);
-        renderWebview(jiraIssueKey);
+        webview.renderWebview(jiraIssueKey);
       } else {
         statusBarItem.hideStatusBarItem();
         inlineMessage.hideInlineMessage();
-        renderWebview('');
+        webview.renderWebview('');
       }
     })
     .catch((error) => {
       console.error('runGitBlameCommand error: ', error.message);
       statusBarItem.hideStatusBarItem();
       inlineMessage.hideInlineMessage();
-      renderWebview('');
+      webview.renderWebview('');
     });
-}
-function bindEventListeners(): void {
-  globalContext.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(onChange),
-    vscode.window.onDidChangeTextEditorSelection(onChange),
-    vscode.workspace.onDidChangeTextDocument(onChange)
-  );
 }
