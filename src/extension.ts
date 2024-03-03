@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
-import { STAUTS_BAR_ITEM_ACTIVE, registerCommands } from './commands';
+import { registerCommands } from './commands';
+import Extension from './components/Extension';
+import StatusBarItem from './components/StatusBarItem';
 import { runGitBlameCommand } from './git';
 import {
   getHoverModalMarkdown,
@@ -8,15 +10,10 @@ import {
   JiraViewProvider,
   getJiraIssueContent
 } from './jira';
-import {
-  getInlineMessage,
-  getLoadingWebviewContent,
-  getWebviewContent
-} from './utils';
+import { getInlineMessage } from './utils';
 import { GitBlameCommandInfo } from './types';
 
 let globalContext: vscode.ExtensionContext;
-let statusBarItem: vscode.StatusBarItem;
 let webviewProvider: JiraViewProvider;
 
 let inlineMessageEditor: vscode.TextEditor;
@@ -29,80 +26,11 @@ const inlineMessageDecorationType =
   });
 
 export function activate(context: vscode.ExtensionContext): void {
-  globalContext = context;
+  let extension = new Extension(context);
+  globalContext = extension.getContext();
   registerCommands(globalContext);
-  registerStatusBarItemActiveCommand();
-  initStatusBarItem();
   initWebview();
   bindEventListeners();
-}
-
-// Staus bar item functions
-function registerStatusBarItemActiveCommand(): vscode.Disposable {
-  return vscode.commands.registerCommand(STAUTS_BAR_ITEM_ACTIVE, async () => {
-    if (!statusBarItem.text) {
-      // This situation might happen when users manually trigger this command
-      vscode.window.showErrorMessage(
-        'No Jira issue found for the active line.'
-      );
-      return;
-    }
-    const jiraIssueKey = statusBarItem.text;
-    const jiraIssueLink = getJiraIssueLink(jiraIssueKey);
-    const selection = await vscode.window.showInformationMessage(
-      `Open ${jiraIssueKey} in:`,
-      'Tab',
-      'Browser'
-    );
-    if (selection === 'Tab') {
-      const panel = vscode.window.createWebviewPanel(
-        'jira-issue',
-        jiraIssueKey,
-        vscode.ViewColumn.One,
-        {
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(globalContext.extensionUri, 'media')
-          ]
-        }
-      );
-      panel.webview.html = getLoadingWebviewContent();
-      const jiraIssueContent = await getJiraIssueContent(statusBarItem.text);
-      let webviewContent: string;
-      if (!jiraIssueContent) {
-        webviewContent = getLoadingWebviewContent();
-      } else {
-        webviewContent = getWebviewContent(
-          jiraIssueLink,
-          jiraIssueContent,
-          globalContext.extensionUri,
-          panel.webview
-        );
-      }
-      panel.webview.html = webviewContent;
-    } else if (selection === 'Browser') {
-      vscode.env.openExternal(vscode.Uri.parse(jiraIssueLink));
-    }
-  });
-}
-function initStatusBarItem(): void {
-  statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    100
-  );
-  statusBarItem.command = STAUTS_BAR_ITEM_ACTIVE;
-  globalContext.subscriptions.push(statusBarItem);
-}
-function renderStatusBarItem(jiraIssueKey: string): void {
-  if (!jiraIssueKey) {
-    hideStatusBarItem();
-  }
-  statusBarItem.text = jiraIssueKey;
-  statusBarItem.show();
-}
-function hideStatusBarItem(): void {
-  statusBarItem.text = '';
-  statusBarItem.hide();
 }
 
 // Inline message functions
@@ -205,23 +133,24 @@ async function renderWebview(jiraIssueKey: string): Promise<void> {
 }
 
 function onChange(): void {
+  const statusBarItem = StatusBarItem.getInstance();
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (gitBlameCommandInfo) {
         const commitMessage = gitBlameCommandInfo.gitBlameInfo.summary;
         const jiraIssueKey = getJiraIssueKey(commitMessage);
-        renderStatusBarItem(jiraIssueKey);
+        statusBarItem.renderStatusBarItem(jiraIssueKey);
         renderInlineMessage(gitBlameCommandInfo, jiraIssueKey);
         renderWebview(jiraIssueKey);
       } else {
-        hideStatusBarItem();
+        statusBarItem.hideStatusBarItem();
         hideInlineMessage();
         renderWebview('');
       }
     })
     .catch((error) => {
       console.error('runGitBlameCommand error: ', error.message);
-      hideStatusBarItem();
+      statusBarItem.hideStatusBarItem();
       hideInlineMessage();
       renderWebview('');
     });
