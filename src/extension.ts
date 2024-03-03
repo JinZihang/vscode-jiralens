@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { registerCommands } from './commands';
+import registerCommands from './commands';
 import Extension from './components/Extension';
-import StatusBarItem from './components/StatusBarItem';
-import InlineMessage from './components/InlineMessage';
-import Webview from './components/Webview';
+import StatusBarItemController from './components/StatusBarItemController';
+import InlineMessageController from './components/InlineMessageController';
+import WebviewController from './components/webview/WebviewController';
 import { runGitBlameCommand } from './services/git';
 import { getJiraIssueKey } from './services/jira';
 
@@ -22,27 +22,30 @@ function bindEventListeners(context: vscode.ExtensionContext): void {
 }
 
 function onChange(): void {
-  const statusBarItem = StatusBarItem.getInstance();
-  const inlineMessage = InlineMessage.getInstance();
-  const webview = Webview.getInstance();
+  const statusBarItemController = StatusBarItemController.getInstance();
+  const inlineMessageController = InlineMessageController.getInstance();
+  const webviewController = WebviewController.getInstance();
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (gitBlameCommandInfo) {
         const commitMessage = gitBlameCommandInfo.gitBlameInfo.summary;
         const jiraIssueKey = getJiraIssueKey(commitMessage);
-        statusBarItem.renderStatusBarItem(jiraIssueKey);
-        inlineMessage.renderInlineMessage(gitBlameCommandInfo, jiraIssueKey);
-        webview.renderWebview(jiraIssueKey);
+        statusBarItemController.renderStatusBarItem(jiraIssueKey);
+        inlineMessageController.renderInlineMessage(
+          gitBlameCommandInfo,
+          jiraIssueKey
+        );
+        webviewController.renderWebview(jiraIssueKey);
       } else {
-        statusBarItem.hideStatusBarItem();
-        inlineMessage.hideInlineMessage();
-        webview.renderWebview('');
+        statusBarItemController.hideStatusBarItem();
+        inlineMessageController.hideInlineMessage();
+        webviewController.renderWebview('');
       }
     })
     .catch((error) => {
       console.error('runGitBlameCommand error: ', error.message);
-      statusBarItem.hideStatusBarItem();
-      inlineMessage.hideInlineMessage();
-      webview.renderWebview('');
+      statusBarItemController.hideStatusBarItem();
+      inlineMessageController.hideInlineMessage();
+      webviewController.renderWebview('');
     });
 }

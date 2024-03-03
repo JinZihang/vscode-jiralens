@@ -1,24 +1,24 @@
 import * as vscode from 'vscode';
 import { STAUTS_BAR_ITEM_ACTIVE } from '../commands';
 import Extension from './Extension';
+import WebviewViewProvider from './webview/WebviewViewProvider';
 import { getJiraIssueContent, getJiraIssueLink } from '../services/jira';
-import { getLoadingWebviewContent, getWebviewContent } from '../utils';
 
-export default class StatusBarItem {
-  private static _instance: StatusBarItem;
+export default class StatusBarItemController {
+  private static _instance: StatusBarItemController;
   private _statusBarItem: vscode.StatusBarItem;
 
   constructor() {
     this.registerStatusBarItemActiveCommand();
     this._statusBarItem = this.initStatusBarItem();
-    StatusBarItem._instance = this;
+    StatusBarItemController._instance = this;
   }
 
-  static getInstance(): StatusBarItem {
-    if (!StatusBarItem._instance) {
-      StatusBarItem._instance = new StatusBarItem();
+  static getInstance(): StatusBarItemController {
+    if (!StatusBarItemController._instance) {
+      StatusBarItemController._instance = new StatusBarItemController();
     }
-    return StatusBarItem._instance;
+    return StatusBarItemController._instance;
   }
 
   registerStatusBarItemActiveCommand(): vscode.Disposable {
@@ -50,22 +50,21 @@ export default class StatusBarItem {
             ]
           }
         );
-        panel.webview.html = getLoadingWebviewContent();
+        panel.webview.html =
+          WebviewViewProvider.getLoadingJiraIssueViewContent();
         const jiraIssueContent = await getJiraIssueContent(
           this._statusBarItem.text
         );
-        let webviewContent: string;
-        if (!jiraIssueContent) {
-          webviewContent = getLoadingWebviewContent();
-        } else {
-          webviewContent = getWebviewContent(
+        if (jiraIssueContent) {
+          panel.webview.html = WebviewViewProvider.getJiraIssueViewContent(
             jiraIssueLink,
             jiraIssueContent,
             extensionContext.extensionUri,
             panel.webview
           );
+        } else {
+          panel.webview.html = WebviewViewProvider.getNoJiraIssueViewContent();
         }
-        panel.webview.html = webviewContent;
       } else if (selection === 'Browser') {
         vscode.env.openExternal(vscode.Uri.parse(jiraIssueLink));
       }
