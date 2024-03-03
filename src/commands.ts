@@ -10,8 +10,8 @@ import {
   setShowInlineCommitter,
   setShowInlineRelativeCommitTime
 } from './configs';
-import { isValidJiraBearerToken } from './jira';
-import { isValidUrl, isValidJiraProjectKey } from './utils';
+import { isValidJiraBearerToken, isValidJiraProjectKey } from './services/jira';
+import { isValidUrl } from './utils';
 
 // The command IDs here must match the command field in package.json
 // Commands to modify extension configurations
@@ -163,7 +163,9 @@ function registerSetShowCommitMessageCommand(): vscode.Disposable {
   });
 }
 
-export function registerCommands(context: vscode.ExtensionContext): void {
+export default function registerCommands(
+  context: vscode.ExtensionContext
+): void {
   context.subscriptions.push(
     registerSetJiraHostCommand(),
     registerSetJiraBearerTokenCommand(),
