@@ -8,7 +8,7 @@ import {
   getShowInlineRelativeCommitTime
 } from '../configs';
 import {
-  convertJiraMarkdownToHtml,
+  convertJiraMarkdownToNormalMarkdown,
   getJiraIssueContent,
   getJiraIssueKey,
   getJiraIssueLink
@@ -121,22 +121,12 @@ export default class InlineMessageController {
     const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
 
     const markdown = new vscode.MarkdownString(
-      `<table width="700px">
-        <tr>
-          <th>
-            <h2 align="left"><a href=${issueLink}>${issueKey}</a>: ${issueContent.summary}</h2>
-          </th>
-        </tr>
-        <tr>
-          <td>
-          ${
-            issueContent.description
-              ? convertJiraMarkdownToHtml(issueContent.description)
-              : 'No description available'
-          }
-          </td>
-        </tr>
-      </table>
+      `## [${issueKey}: ${issueContent.summary}](${issueLink})
+      \n`
+    );
+
+    markdown.appendMarkdown(
+      `${convertJiraMarkdownToNormalMarkdown(issueContent.description)}
       \n`
     );
 
@@ -178,8 +168,6 @@ export default class InlineMessageController {
       markdown.appendMarkdown(`No attachment found`);
     }
 
-    markdown.supportHtml = true;
-    markdown.isTrusted = true;
     return markdown;
   }
 
