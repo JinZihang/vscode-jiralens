@@ -3,6 +3,7 @@ import { DOMSerializer } from 'prosemirror-model';
 import { defaultSchema } from '@atlaskit/adf-schema/schema-default';
 import { WikiMarkupTransformer } from '@atlaskit/editor-wikimarkup-transformer';
 import { JSDOM } from 'jsdom';
+import TurndownService from 'turndown';
 import {
   getJiraBearerToken,
   getJiraHost,
@@ -74,4 +75,14 @@ export function convertJiraMarkdownToHtml(markdown: string): string {
     target
   ) as HTMLElement;
   return html.outerHTML;
+}
+
+export function convertJiraMarkdownToNormalMarkdown(markdown: string): string {
+  const html = convertJiraMarkdownToHtml(markdown);
+  const turndownService = new TurndownService();
+  turndownService.addRule('strikethrough', {
+    filter: ['del', 's'],
+    replacement: (content) => '~' + content + '~'
+  });
+  return turndownService.turndown(html);
 }
