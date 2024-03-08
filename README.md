@@ -4,6 +4,24 @@ Welcome to JiraLens, an open-source project fueled by community collaboration. H
 
 Encountering challenges or envisioning new features? Share your experiences and thoughts with us through [GitHub issues](https://github.com/JinZihang/vscode-jiralens/issues). Your feedback is invaluable in shaping the future of JiraLens!
 
+## List of Contents
+
+- [Introduction](#introduction 'Jump to Introduction')
+  - [Overview](#overview 'Jump to Overview')
+  - [Why JiraLens?](#why-jiralens 'Jump to Why JiraLens?')
+- [Features](#features 'Jump to Features')
+  - [Status Bar Item](#status-bar-item 'Jump to Status Bar Item')
+  - [Inline Message](#inline-message 'Jump to Inline Message')
+  - [Hover Modal](#hover-modal 'Jump to Hover Modal')
+  - [Activity Bar Webview](#activity-bar-item 'Jump to Activity Bar Webview')
+  - [Issue Tab](#issue-tab 'Jump to Issue Tab')
+  - [Comprehensive Commands](#comprehensive-commands 'Jump to Comprehensive Commands')
+- [Extension Setup](#extension-setup 'Jump to Extension Setup')
+  - [Jira Host](#jira-host 'Jump to JiraHost')
+  - [Bearer Token (Personal Access Token)](#bearer-token-personal-access-token 'Jump to Bearer Token (Personal Access Token)')
+  - [Project Keys](#project-keys 'Jump to Project Keys')
+- [Known Issues](#known-issues 'Jump to Known Issues')
+
 ## Introduction
 
 ### Overview
