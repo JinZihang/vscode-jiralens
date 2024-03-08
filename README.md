@@ -13,11 +13,11 @@ Encountering challenges or envisioning new features? Share your experiences and 
   - [Status Bar Item](#status-bar-item 'Jump to Status Bar Item')
   - [Inline Message](#inline-message 'Jump to Inline Message')
   - [Hover Modal](#hover-modal 'Jump to Hover Modal')
-  - [Activity Bar Webview](#activity-bar-item 'Jump to Activity Bar Webview')
+  - [Activity Bar Item](#activity-bar-item 'Jump to Activity Bar Item')
   - [Issue Tab](#issue-tab 'Jump to Issue Tab')
   - [Comprehensive Commands](#comprehensive-commands 'Jump to Comprehensive Commands')
 - [Extension Setup](#extension-setup 'Jump to Extension Setup')
-  - [Jira Host](#jira-host 'Jump to JiraHost')
+  - [Jira Host](#jira-host 'Jump to Jira Host')
   - [Bearer Token (Personal Access Token)](#bearer-token-personal-access-token 'Jump to Bearer Token (Personal Access Token)')
   - [Project Keys](#project-keys 'Jump to Project Keys')
 - [Known Issues](#known-issues 'Jump to Known Issues')
@@ -38,35 +38,35 @@ While extensions like GitLens offer valuable insights already, they often fall s
 
 Seamlessly open Jira issues in a dedicated VS Code tab or your preferred external browser.
 
-![activate-status-bar-item.gif](resources/readme/activate-status-bar-item.gif)
+<img src='resources/readme/activate-status-bar-item.gif' alt='activate-status-bar-item.gif' width='750'>
 
 ### Inline Message
 
 Receive quick information about the committer, relative commit time, Jira issue key, and commit message.
 
-![inline-message.gif](resources/readme/inline-message.gif)
+<img src='resources/readme/inline-message.gif' alt='inline-message.gif' width='750'>
 
 The content of the inline message can be easily configured.
 
-![configure-inline-message](resources/readme/configure-inline-message.gif)
+<img src='resources/readme/configure-inline-message.gif' alt='configure-inline-message' width='750'>
 
 ### Hover Modal
 
 Gain instant, essential information about the Jira issue while hovering over the inline message.
 
-![hover-modal.gif](resources/readme/hover-modal.gif)
+<img src='resources/readme/hover-modal.gif' alt='hover-modal.gif' width='750'>
 
 ### Activity Bar Item
 
 Experience automatic updates and display of Jira issue content for the active line, ensuring a seamless workflow.
 
-![activity-bar-webview.gif](resources/readme/activity-bar-webview.gif)
+<img src='resources/readme/activity-bar-webview.gif' alt='activity-bar-webview.gif' width='750'>
 
 ### Issue Tab
 
 Effortlessly review multiple Jira issues side by side for comprehensive project management.
 
-![multiple-jira-issue-tabs.png](resources/readme/multiple-jira-issue-tabs.png)
+<img src='resources/readme/multiple-jira-issue-tabs.png' alt='multiple-jira-issue-tabs.png' width='750'>
 
 ### Comprehensive Commands
 
@@ -91,7 +91,7 @@ To ensure proper functionality, JiraLens requires the Jira host, the Jira authen
 
 You can customize the extension settings either using the VS Code settings editor or by utilizing the commands mentioned above.
 
-![extension-settings.png](resources/readme/extension-settings.png)
+<img src='resources/readme/extension-settings.png' alt='extension-settings.png' width='500'>
 
 ### Jira Host
 
