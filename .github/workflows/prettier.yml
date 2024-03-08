@@ -7,14 +7,15 @@ on:
     branches: ['main']
 
 jobs:
-  eslint:
+  prettier:
+    name: Code scanning with Prettier
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout codes
         uses: actions/checkout@v3
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint scanner
+      - name: Run the Prettier scanner
         run: npm run format:check

@@ -8,13 +8,14 @@ on:
 
 jobs:
   eslint:
+    name: Code scanning with ESLint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout codes
         uses: actions/checkout@v3
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint scanner
+      - name: Run the ESLint scanner
         run: npm run lint
