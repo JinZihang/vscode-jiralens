@@ -2,6 +2,10 @@ import * as vscode from 'vscode';
 
 let wsConfig = vscode.workspace.getConfiguration('jiralens');
 
+export function syncWorkspaceConfiguration(): void {
+  wsConfig = vscode.workspace.getConfiguration('jiralens');
+}
+
 // jiralens.jiraHost
 export function getJiraHost(): string {
   return wsConfig.get('jiraHost') || '';
@@ -9,7 +13,7 @@ export function getJiraHost(): string {
 export async function setJiraHost(host: string): Promise<boolean> {
   try {
     await wsConfig.update('jiraHost', host, vscode.ConfigurationTarget.Global);
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(`Failed to update the Jira host: ${error}`);
@@ -28,7 +32,7 @@ export async function setJiraBearerToken(token: string): Promise<boolean> {
       token,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(
@@ -49,7 +53,7 @@ async function setJiraProjectKeys(keys: string[]): Promise<boolean> {
       keys,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(`Failed to update project keys: ${error}`);
@@ -89,7 +93,7 @@ export async function setShowInlineCommitter(show: boolean): Promise<boolean> {
       show,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(
@@ -112,7 +116,7 @@ export async function setShowInlineRelativeCommitTime(
       show,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(
@@ -135,7 +139,7 @@ export async function setShowInlineJiraIssueKey(
       show,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(
@@ -158,7 +162,7 @@ export async function setShowInlineCommitMessage(
       show,
       vscode.ConfigurationTarget.Global
     );
-    wsConfig = vscode.workspace.getConfiguration('jiralens');
+    syncWorkspaceConfiguration();
     return true;
   } catch (error) {
     vscode.window.showErrorMessage(
