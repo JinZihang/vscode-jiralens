@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { syncWorkspaceConfiguration } from './configs';
 import registerCommands from './commands';
 import Extension from './components/Extension';
 import StatusBarItemController from './components/StatusBarItemController';
@@ -16,6 +17,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 function bindEventListeners(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(syncWorkspaceConfiguration),
     /**
      * onDidChangeActiveTextEditor    - change of editor
      * onDidChangeTextEditorSelection - change of selection
