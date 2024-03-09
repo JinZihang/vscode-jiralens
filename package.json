@@ -68,7 +68,7 @@
         },
         "jiralens.inlineCommitMessage": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Show the commit message in inline message."
         }
       }
