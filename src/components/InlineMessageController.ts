@@ -17,7 +17,8 @@ import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
 
 export default class InlineMessageController {
   private static _instance: InlineMessageController;
-  private _inlineMessageEditor: vscode.TextEditor | undefined;
+  private _renderedEditor: vscode.TextEditor | undefined;
+  private _renderedLineNumber: number | undefined;
   private _inlineMessageDecorationType =
     vscode.window.createTextEditorDecorationType({
       after: {
@@ -171,16 +172,23 @@ export default class InlineMessageController {
     return markdown;
   }
 
-  private hasTargetLineChanged(
+  private hasTargetLineChanged(fileName: string, lineNumber: number): boolean {
+    if (!this._renderedEditor) {
+      // No inline message is being displayed
+      return false;
+    }
+    return (
+      fileName !== this._renderedEditor.document.fileName ||
+      lineNumber !== this._renderedLineNumber
+    );
+  }
+
+  private updateRenderRecord(
     editor: vscode.TextEditor,
     lineNumber: number
-  ): boolean {
-    const activeEditor = vscode.window.activeTextEditor;
-    return (
-      !activeEditor ||
-      activeEditor !== editor ||
-      activeEditor.selection.active.line !== lineNumber
-    );
+  ): void {
+    this._renderedEditor = editor;
+    this._renderedLineNumber = lineNumber;
   }
 
   async renderInlineMessage(
@@ -188,36 +196,45 @@ export default class InlineMessageController {
     jiraIssueKey: string
   ): Promise<void> {
     const { gitBlameInfo, editor, lineNumber } = gitBlameCommandInfo;
-    const message = this.getInlineMessage(gitBlameInfo);
-    // Ensure the target line has not changed since calling runGitBlameCommand()
-    if (!message || this.hasTargetLineChanged(editor, lineNumber)) {
+    const inlineMessage = this.getInlineMessage(gitBlameInfo);
+    if (this.hasTargetLineChanged(editor.document.fileName, lineNumber)) {
       this.hideInlineMessage();
+    }
+    // Render using the latest information since the length of the line could have changed
+    let activeEditor = vscode.window.activeTextEditor;
+    if (!activeEditor) {
       return;
     }
-    this._inlineMessageEditor = vscode.window.activeTextEditor!;
-    let activeLine = this._inlineMessageEditor.document.lineAt(lineNumber);
-    // Render using the latest information since the length of the line could have changed
+    let activeLine = activeEditor.document.lineAt(lineNumber);
+    /**
+     * Since hasTargetLineChanged() is not based on the active editor, if the active line
+     * changed while running the git blame command, the range to render will be incorrect.
+     * However, as the git blame command runs fast, we expect the situation to not happen.
+     */
     let range = new vscode.Range(
       activeLine.lineNumber,
       activeLine.text.length,
       activeLine.lineNumber,
-      activeLine.text.length + message.length
+      activeLine.text.length + inlineMessage.length
     );
-    const renderOptions = { after: { contentText: message } };
+    const renderOptions = { after: { contentText: inlineMessage } };
     if (!jiraIssueKey) {
-      this._inlineMessageEditor.setDecorations(
-        this._inlineMessageDecorationType,
-        [{ range, renderOptions }]
-      );
+      // Render the no-Jira-issue message
+      activeEditor.setDecorations(this._inlineMessageDecorationType, [
+        { range, renderOptions }
+      ]);
+      this.updateRenderRecord(activeEditor, lineNumber);
       return;
     }
+    // Render the message with loading hover modal
     let hoverMessage: vscode.MarkdownString = new vscode.MarkdownString(
       'Loading Jira information...'
     );
-    this._inlineMessageEditor.setDecorations(
-      this._inlineMessageDecorationType,
-      [{ range, renderOptions, hoverMessage }]
-    );
+    activeEditor.setDecorations(this._inlineMessageDecorationType, [
+      { range, renderOptions, hoverMessage }
+    ]);
+    this.updateRenderRecord(activeEditor, lineNumber);
+    // Fetch the Jira issue content
     const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
     if (jiraIssueContent) {
       hoverMessage = this.getHoverModalMarkdown(
@@ -229,32 +246,36 @@ export default class InlineMessageController {
         `Failed to load the content of ${jiraIssueKey}.`
       );
     }
-    // Ensure the target line has not changed since running getJiraIssueContent()
-    if (this.hasTargetLineChanged(editor, lineNumber)) {
+    if (this.hasTargetLineChanged(editor.document.fileName, lineNumber)) {
+      // The message with loading hover modal should have been hidden by the new rendering call
       return;
     }
-    this._inlineMessageEditor = vscode.window.activeTextEditor!;
-    activeLine = this._inlineMessageEditor.document.lineAt(lineNumber);
+    activeEditor = vscode.window.activeTextEditor!;
+    if (!activeEditor) {
+      return;
+    }
+    activeLine = activeEditor.document.lineAt(lineNumber);
     // Render using the latest information since the length of the line could have changed
     range = new vscode.Range(
       activeLine.lineNumber,
       activeLine.text.length,
       activeLine.lineNumber,
-      activeLine.text.length + message.length
+      activeLine.text.length + inlineMessage.length
     );
     const newDecorations = [{ range, renderOptions, hoverMessage }];
-    this._inlineMessageEditor.setDecorations(
+    activeEditor.setDecorations(
       this._inlineMessageDecorationType,
       newDecorations
     );
   }
 
   hideInlineMessage(): void {
-    if (this._inlineMessageEditor) {
-      this._inlineMessageEditor.setDecorations(
+    if (this._renderedEditor) {
+      this._renderedEditor.setDecorations(
         this._inlineMessageDecorationType,
         []
       );
+      this._renderedEditor = undefined;
     }
   }
 }

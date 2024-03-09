@@ -1,3 +1,7 @@
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function isValidUrl(url: string): boolean {
   try {
     new URL(url);
