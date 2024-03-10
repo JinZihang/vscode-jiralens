@@ -5,7 +5,6 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  padding-bottom: 2rem;
 }
 
 .header {
@@ -15,6 +14,29 @@ body {
   flex-direction: row;
   align-items: center;
 }
+h3 {
+  margin-bottom: 5px;
+}
+
+table {
+  border-collapse: collapse;
+}
+table,
+th,
+td {
+  border: 1px solid white;
+  padding: 8px;
+}
+
+ul {
+  padding-left: 14px;
+}
+ol {
+  margin-left: 15px;
+}
+
+/* ---------- Custom Tags ---------- */
+/* Summary */
 #project-avatar {
   width: 48px;
   height: 48px;
@@ -24,19 +46,13 @@ body {
   margin-left: 10px;
   flex-direction: column;
 }
-h3 {
-  margin-bottom: 5px;
-}
 
+/* Details */
 #issue-details {
   margin-top: 0.5rem;
   display: flex;
   flex-direction: row;
   margin-bottom: 1rem;
-}
-#priority-icon {
-  width: 12px;
-  height: 12px;
 }
 #issue-details-keys {
   display: flex;
@@ -47,7 +63,12 @@ h3 {
   display: flex;
   flex-direction: column;
 }
+#priority-icon {
+  width: 12px;
+  height: 12px;
+}
 
+/* Profiles */
 #profiles {
   margin-top: 0.5rem;
 }
@@ -62,30 +83,20 @@ h3 {
   margin-right: 10px;
 }
 
+/* Description */
 #issue-description {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+/* Attachments */
 #attachments {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+/* Comments */
 #comments {
   margin-top: 1rem;
   margin-bottom: 1rem;
-}
-table {
-  border-collapse: collapse;
-}
-table,
-th,
-td {
-  border: 1px solid white;
-  padding: 8px;
-}
-#external-link {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
