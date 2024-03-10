@@ -263,7 +263,6 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
               .join('')}
           </table>
         </div>
-        <a id="external-link" href="${jiraIssueLink}">Open in Browser</a>
       </body>
     </html>`;
   }
