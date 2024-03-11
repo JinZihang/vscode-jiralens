@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.1 - 11 Mar 2024
+
+- Provide a feedback link when the Jira markdown conversion fails
+- Suppress several errors to avoid alarming users unnecessarily
+- Correct spellings
+
 ## 0.3.0 - 10 Mar 2024
 
 - Remove the `Open in Browser` component from webview
