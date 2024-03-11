@@ -36,7 +36,7 @@ git checkout -b <new-branch-name>
 
 #### Categories
 
-These categories aim to assit the community in quickly grasping the intent of your branch. Feel free to use alternative category names that align with your changes.
+These categories aim to assist the community in quickly grasping the intent of your branch. Feel free to use alternative category names that align with your changes.
 
 - `feat`: introduce new features
 - `test`: test-related changes
