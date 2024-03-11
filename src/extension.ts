@@ -48,7 +48,10 @@ function onChange(): void {
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (!gitBlameCommandInfo) {
-        throw new Error('gitBlameCommandInfo is undefined.');
+        statusBarItemController.hideStatusBarItem();
+        inlineMessageController.hideInlineMessage();
+        webviewController.renderWebview('');
+        return;
       }
       const commitMessage = gitBlameCommandInfo.gitBlameInfo.summary;
       const jiraIssueKey = getJiraIssueKey(commitMessage);
@@ -61,7 +64,7 @@ function onChange(): void {
       webviewController.renderWebview(jiraIssueKey);
     })
     .catch((error) => {
-      console.error('runGitBlameCommand error:', error.message);
+      console.debug('runGitBlameCommand error:', error.message);
       statusBarItemController.hideStatusBarItem();
       inlineMessageController.hideInlineMessage();
       webviewController.renderWebview('');
