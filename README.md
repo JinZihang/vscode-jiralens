@@ -108,4 +108,4 @@ Refer to [this documentation](https://support.atlassian.com/jira-software-cloud/
 ## Known Issues
 
 1. Some Jira markdowns like colored texts cannot be rendered, when they exist in the content, Jira issue details will stuck at loading.
-2. After forward-deleting to pull the next line to the current line, it takes a short while for the inline message to udpdate its position.
+2. After forward-deleting to pull the next line to the current line, it takes a short while for the inline message to update its position.

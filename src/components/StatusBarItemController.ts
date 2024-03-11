@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { STAUTS_BAR_ITEM_ACTIVE } from '../commands';
+import { STATUS_BAR_ITEM_ACTIVE } from '../commands';
 import Extension from './Extension';
 import WebviewViewProvider from './webview/WebviewViewProvider';
 import { getJiraIssueContent, getJiraIssueLink } from '../services/jira';
@@ -22,7 +22,7 @@ export default class StatusBarItemController {
   }
 
   registerStatusBarItemActiveCommand(): vscode.Disposable {
-    return vscode.commands.registerCommand(STAUTS_BAR_ITEM_ACTIVE, async () => {
+    return vscode.commands.registerCommand(STATUS_BAR_ITEM_ACTIVE, async () => {
       if (!this._statusBarItem.text) {
         // This situation might happen when users manually trigger this command
         vscode.window.showErrorMessage(
@@ -76,7 +76,7 @@ export default class StatusBarItemController {
       vscode.StatusBarAlignment.Right,
       100
     );
-    statusBarItem.command = STAUTS_BAR_ITEM_ACTIVE;
+    statusBarItem.command = STATUS_BAR_ITEM_ACTIVE;
     const extensionContext = Extension.getInstance().getContext();
     extensionContext.subscriptions.push(statusBarItem);
     return statusBarItem;

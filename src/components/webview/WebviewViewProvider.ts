@@ -26,7 +26,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="widåth=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
         <title>Jira Issue Details</title>
       </head>
@@ -194,7 +194,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
               return `
               <img class="user-avatar" src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default?size=48&s=48" alt="Issue Assignee">
               <div>
-                <p>Assignee: Unassgined</p>
+                <p>Assignee: Unassigned</p>
               </div>
               `;
             }
@@ -218,7 +218,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
               return `
               <img class="user-avatar" src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default?size=48&s=48" alt="Issue Reporter">
               <div>
-                <p>Reporter: Unassgined</p>
+                <p>Reporter: Unassigned</p>
               </div>
               `;
             }
