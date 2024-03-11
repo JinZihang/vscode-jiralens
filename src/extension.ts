@@ -48,7 +48,7 @@ function onChange(): void {
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (!gitBlameCommandInfo) {
-        throw new Error('gitBlameCommandInfo is undefiend.');
+        throw new Error('gitBlameCommandInfo is undefined.');
       }
       const commitMessage = gitBlameCommandInfo.gitBlameInfo.summary;
       const jiraIssueKey = getJiraIssueKey(commitMessage);

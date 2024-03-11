@@ -5,7 +5,7 @@
 - Remove the `Open in Browser` component from webview
 - Disable inline commit messages by default
 - Fix the issue where certain HTML tags like `<s>` are not displayed correctly in the hover modal
-- Fix the issue where the inline message in the previous editor presists after switching to a new editor
+- Fix the issue where the inline message in the previous editor persists after switching to a new editor
 - Fix the webview list display issue
 - Fix the issue that after updating extension configurations using VS Code settings editor, the updates are not reflected immediately
 

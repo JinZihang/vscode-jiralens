@@ -24,7 +24,7 @@ const SET_SHOW_RELATIVE_COMMIT_TIME = 'jiralens.setShowRelativeCommitTime';
 const SET_SHOW_JIRA_ISSUE_KEY = 'jiralens.setShowJiraIssueKey';
 const SET_SHOW_COMMIT_MESSAGE = 'jiralens.setShowCommitMessage';
 // UI commands
-export const STAUTS_BAR_ITEM_ACTIVE = 'jiralens.statusBarItemActive';
+export const STATUS_BAR_ITEM_ACTIVE = 'jiralens.statusBarItemActive';
 
 function registerSetJiraHostCommand(): vscode.Disposable {
   return vscode.commands.registerCommand(SET_JIRA_HOST, async () => {

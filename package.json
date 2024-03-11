@@ -54,7 +54,7 @@
         "jiralens.inlineCommitter": {
           "type": "boolean",
           "default": true,
-          "description": "Show the commiter in inline message."
+          "description": "Show the committer in inline message."
         },
         "jiralens.inlineRelativeCommitTime": {
           "type": "boolean",
