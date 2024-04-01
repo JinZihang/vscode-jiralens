@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.2 - 01 Apr 2024
+
+- Correct and refactor the markdown-conversion-failure messages
+
 ## 0.3.1 - 11 Mar 2024
 
 - Provide a feedback link when the Jira markdown conversion fails
