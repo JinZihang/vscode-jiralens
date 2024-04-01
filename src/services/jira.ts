@@ -64,7 +64,7 @@ export async function getJiraIssueContent(
 }
 
 const conversionFailureMessage =
-  'Encountered an error while converting this Jira markdown for display. Kindly help us resolve this issue by reporting it <a href="https://github.com/JinZihang/vscode-jiralens/issues/23">here</a>.';
+  'Encountered an error while converting this Jira markdown to HTML for display. Kindly help us resolve this issue by reporting it <a href="https://github.com/JinZihang/vscode-jiralens/issues/23">here</a>.';
 
 export function convertJiraMarkdownToHtml(markdown: string): string {
   try {
@@ -88,6 +88,9 @@ export function convertJiraMarkdownToHtml(markdown: string): string {
 export function convertJiraMarkdownToNormalMarkdown(markdown: string): string {
   try {
     const html = convertJiraMarkdownToHtml(markdown);
+    if (html === conversionFailureMessage) {
+      return 'Encountered an error while converting this Jira markdown to HTML for display. Kindly help us resolve this issue by reporting it [here](https://github.com/JinZihang/vscode-jiralens/issues/23).';
+    }
     const turndownService = new TurndownService();
     turndownService.addRule('strikethrough', {
       filter: ['del', 's'],
@@ -100,6 +103,6 @@ export function convertJiraMarkdownToNormalMarkdown(markdown: string): string {
       markdown,
       error
     );
-    return conversionFailureMessage;
+    return 'Encountered an error while converting this Jira markdown to normal markdown for display. Kindly help us resolve this issue by reporting it [here](https://github.com/JinZihang/vscode-jiralens/issues/23).';
   }
 }
