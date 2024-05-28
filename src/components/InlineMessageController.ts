@@ -155,19 +155,7 @@ export default class InlineMessageController {
     const fixVersions = versionList.length
       ? versionList.join(', ')
       : 'No fix version found';
-    markdown.appendMarkdown(`Fix Version/s: ${fixVersions}${indent}|${indent}`);
-
-    markdown.appendMarkdown('Attachments: ');
-    if (issueContent.attachment.length > 0) {
-      for (let i = 0; i < issueContent.attachment.length; i++) {
-        const numbering = i + 1;
-        markdown.appendMarkdown(
-          `[(${numbering})](${issueContent.attachment[i].content}) `
-        );
-      }
-    } else {
-      markdown.appendMarkdown(`No attachment found`);
-    }
+    markdown.appendMarkdown(`Fix Version/s: ${fixVersions}${indent}`);
 
     return markdown;
   }
