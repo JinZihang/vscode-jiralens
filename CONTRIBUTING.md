@@ -9,8 +9,8 @@ Ensure that you have the following tools and dependencies installed:
 - Git
 - VS Code 1.84.0
 - VS Code Extension `amodio.tsl-problem-matcher`
-- Node.js v20.8.0
-- NPM 10.1.0
+- Node.js v22.16.0
+- NPM 10.9.2
 
 ### Debugger Setup
 
@@ -27,27 +27,19 @@ Prior to development, kindly initiate a [GitHub issue](https://github.com/JinZih
 
 ### Create a Branch
 
-Create a dedicated branch for every task following the convention `<category>/<description>`. For example, `feature/configure-inline-message`, `fix/incorrect-jira-issue-key`, or `documentation/update-contribution-guidelines`.
+Create a dedicated branch for every task following the conventional `<type>/<description>`. For example, `feat/configure-inline-message`, `fix/incorrect-jira-issue-key`, or `doc/update-contribution-guidelines`.
 
 ```
 // Create a new branch from the current branch
 git checkout -b <new-branch-name>
 ```
 
-#### Categories
-
-These categories aim to assist the community in quickly grasping the intent of your branch. Feel free to use alternative category names that align with your changes.
-
-- `feat`: introduce new features
-- `test`: test-related changes
-- `fix`: address reported issues or bugs
-- `ref`: neither a feature nor a fix
-- `doc`: documentation-only updates
+For the `<type>` field mentioned above, please follow the [conventional commit guidelines](https://www.conventionalcommits.org/en/v1.0.0/).
 
 ### Follow Development Best Practices
 
 - Avoid pushing any credentials or sensitive information to the remote repository
-- Use `npm run format` before commiting you changes to maintain a consistent coding style
+- Use `npm run format` before committing you changes to maintain a consistent coding style
 - To obtain updates from another branch, use `git rebase` instead of `git merge` for a linear history
 
 ```
@@ -63,5 +55,5 @@ git rebase A
 The `main` branch is protected from direct commits. To merge your updates:
 
 1. Raise a [GitHub pull request](https://github.com/JinZihang/vscode-jiralens/pulls) from your branch targeting `main`.
-2. Provide a clear title and description to explain your changes.
+2. Update the title and description following the [conventional commit guidelines](https://www.conventionalcommits.org/en/v1.0.0/). The eventual merge commit will use them to compose the commit message.
 3. Invite the community for reviews (a minimum of one approval is required to proceed with the merge).
