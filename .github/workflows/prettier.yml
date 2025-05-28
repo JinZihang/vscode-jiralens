@@ -1,10 +1,7 @@
 name: Prettier
 
 on:
-  push:
-    branches: ['main']
   pull_request:
-    branches: ['main']
 
 jobs:
   prettier:
@@ -13,6 +10,11 @@ jobs:
     steps:
       - name: Checkout codes
         uses: actions/checkout@v3
+
+      - name: Set up Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
