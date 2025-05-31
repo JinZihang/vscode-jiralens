@@ -155,6 +155,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/jira-client": "^7.1.8",
     "@types/jsdom": "^21.1.6",
     "@types/node": "22.x",
