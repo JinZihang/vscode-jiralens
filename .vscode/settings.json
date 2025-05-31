@@ -16,6 +16,7 @@
     "CODEOWNERS",
     "commitlint",
     "commitlintrc",
+    "conventionalcommits",
     "jinzihang",
     "jiralens",
     "nosources",
