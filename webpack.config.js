@@ -17,8 +17,9 @@ const extensionConfig = {
     libraryTarget: 'commonjs2'
   },
   externals: {
-    vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-    // modules added here also need to be added in the .vscodeignore file
+    vscode: 'commonjs vscode' // The vscode-module is created on-the-fly and must be excluded
+    // Add other modules that cannot be webpack'ed here: https://webpack.js.org/configuration/externals/
+    // Modules added here also need to be added in the .vscodeignore file
   },
   resolve: {
     extensions: ['.ts', '.js']
@@ -39,6 +40,11 @@ const extensionConfig = {
   devtool: 'nosources-source-map',
   infrastructureLogging: {
     level: 'log'
-  }
+  },
+  ignoreWarnings: [
+    {
+      module: /node_modules/
+    }
+  ]
 };
 module.exports = [extensionConfig];

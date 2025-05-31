@@ -1,4 +1,4 @@
-name: Prettier
+name: Run Tests
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  prettier:
-    name: Code scanning with Prettier
+  test:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
@@ -19,7 +19,7 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run the Prettier scanner
-        run: npm run format:check
+      - name: Run tests
+        run: npm test

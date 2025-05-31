@@ -10,5 +10,18 @@
   "typescript.tsc.autoDetect": "off",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.configPath": "./.prettierrc",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "amodio",
+    "CODEOWNERS",
+    "commitlint",
+    "commitlintrc",
+    "conventionalcommits",
+    "jinzihang",
+    "jiralens",
+    "nosources",
+    "prosemirror",
+    "vscodeignore",
+    "wikimarkup"
+  ]
 }

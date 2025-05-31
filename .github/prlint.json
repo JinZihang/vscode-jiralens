@@ -1,0 +1,26 @@
+{
+  "head.ref": [
+    {
+      "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)/.{3,35}$",
+      "message": "Please rename the branch to follow the conventional commit format: <type>/<description (3 to 35 characters)>"
+    }
+  ],
+  "title": [
+    {
+      "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([^\\s]+\\))?!?:\\s.{10,100}$",
+      "message": "The PR title must conform to the conventional commit format: <type>(optional scope)(\"!\" for breaking change): <description (10 to 100 characters)>"
+    }
+  ],
+  "assignee.login": [
+    {
+      "pattern": ".+",
+      "message": "Please set at least one assignee"
+    }
+  ],
+  "labels.0.name": [
+    {
+      "pattern": ".+",
+      "message": "Please add at least one label"
+    }
+  ]
+}

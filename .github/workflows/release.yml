@@ -1,13 +1,12 @@
-name: Prettier
+name: Release
 
 on:
   push:
     branches: ['main']
-  pull_request:
 
 jobs:
-  prettier:
-    name: Code scanning with Prettier
+  release:
+    name: Semantic release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
@@ -21,5 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run the Prettier scanner
-        run: npm run format:check
+      - name: Semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: HUSKY=0 npx semantic-release
