@@ -22,5 +22,5 @@ jobs:
 
       - name: Semantic release
         env:
-          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
         run: HUSKY=0 npx semantic-release
