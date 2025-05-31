@@ -184,6 +184,7 @@
     ]
   },
   "release": {
+    "repositoryUrl": "https://github.com/JinZihang/vscode-jiralens",
     "branches": [
       "main"
     ],
