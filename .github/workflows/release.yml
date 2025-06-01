@@ -20,19 +20,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # https://github.com/marketplace/actions/use-app-token
-      - name: Generate token
-        uses: wow-actions/use-app-token@v2
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.SEMANTIC_RELEASE_APP_ID }}
-          private_key: ${{ secrets.SEMANTIC_RELEASE_PRIVATE_KEY }}
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Semantic release
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
-          GIT_AUTHOR_NAME: ${{ steps.generate_token.outputs.app_slug }}[bot]
-          GIT_AUTHOR_EMAIL: ${{ steps.generate_token.outputs.app_slug }}[bot]@users.noreply.github.com
-          GIT_COMMITTER_NAME: ${{ steps.generate_token.outputs.app_slug }}[bot]
-          GIT_COMMITTER_EMAIL: ${{ steps.generate_token.outputs.app_slug }}[bot]@users.noreply.github.com
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: HUSKY=0 npx semantic-release
