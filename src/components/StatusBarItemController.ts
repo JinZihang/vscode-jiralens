@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { STATUS_BAR_ITEM_ACTIVE } from '../commands';
 import Extension from './Extension';
 import WebviewViewProvider from './webview/WebviewViewProvider';
-import { getJiraIssueContent, getJiraIssueLink } from '../services/jira';
+import { getJiraIssueContent, getJiraIssueUrl } from '../services/jira';
 
 export default class StatusBarItemController {
   private static _instance: StatusBarItemController;
@@ -32,7 +32,7 @@ export default class StatusBarItemController {
       }
       const extensionContext = Extension.getInstance().getContext();
       const jiraIssueKey = this._statusBarItem.text;
-      const jiraIssueLink = getJiraIssueLink(jiraIssueKey);
+      const jiraIssueUrl = getJiraIssueUrl(jiraIssueKey);
       const selection = await vscode.window.showInformationMessage(
         `Open ${jiraIssueKey} in:`,
         'Tab',
@@ -57,7 +57,7 @@ export default class StatusBarItemController {
         );
         if (jiraIssueContent) {
           panel.webview.html = WebviewViewProvider.getJiraIssueViewContent(
-            jiraIssueLink,
+            jiraIssueUrl,
             jiraIssueContent,
             extensionContext.extensionUri,
             panel.webview
@@ -66,7 +66,7 @@ export default class StatusBarItemController {
           panel.webview.html = WebviewViewProvider.getNoJiraIssueViewContent();
         }
       } else if (selection === 'Browser') {
-        vscode.env.openExternal(vscode.Uri.parse(jiraIssueLink));
+        vscode.env.openExternal(vscode.Uri.parse(jiraIssueUrl));
       }
     });
   }

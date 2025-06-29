@@ -29,8 +29,16 @@ export function getJiraIssueKey(commitMessage: string): string {
   return '';
 }
 
-export function getJiraIssueLink(issueKey: string): string {
-  return `https://${getJiraHost()}/browse/${issueKey}`;
+export function getJiraIssueUrl(jiraIssueKey: string): string {
+  return `https://${getJiraHost()}/browse/${jiraIssueKey}`;
+}
+
+export function getJiraProfileUrl(name: string): string {
+  return `https://${getJiraHost()}/secure/ViewProfile.jspa?name=${name}`;
+}
+
+export function getJiraQueryUrl(key: string, value: string): string {
+  return `https://${getJiraHost()}/issues/?jql=${encodeURIComponent(`${key}="${value}"`)}`;
 }
 
 export function isValidJiraBearerToken(token: string): boolean {
@@ -50,7 +58,7 @@ export function isValidJiraBearerToken(token: string): boolean {
 }
 
 export async function getJiraIssueContent(
-  issueKey: string
+  jiraIssueKey: string
 ): Promise<JiraApi.JsonResponse | undefined> {
   const jira = new JiraApi({
     protocol: 'https',
@@ -59,7 +67,7 @@ export async function getJiraIssueContent(
     strictSSL: true,
     bearer: getJiraBearerToken()
   });
-  const issueContent = await jira.findIssue(issueKey);
+  const issueContent = await jira.findIssue(jiraIssueKey);
   return issueContent;
 }
 

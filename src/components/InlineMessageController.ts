@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import JiraApi from 'jira-client';
 import {
-  getJiraHost,
   getShowInlineCommitMessage,
   getShowInlineCommitter,
   getShowInlineJiraIssueKey,
@@ -11,9 +10,12 @@ import {
   convertJiraMarkdownToNormalMarkdown,
   getJiraIssueContent,
   getJiraIssueKey,
-  getJiraIssueLink
+  getJiraIssueUrl,
+  getJiraProfileUrl,
+  getJiraQueryUrl
 } from '../services/jira';
 import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
+import { JiraUserInfo, JiraVersionInfo } from '../services/jira.types';
 
 export default class InlineMessageController {
   private static _instance: InlineMessageController;
@@ -115,60 +117,59 @@ export default class InlineMessageController {
   }
 
   private getHoverModalMarkdown(
-    issueKey: string,
-    issueContent: JiraApi.JsonResponse
+    jiraIssueKey: string,
+    jiraIssueContent: JiraApi.JsonResponse
   ): vscode.MarkdownString {
-    const issueLink = getJiraIssueLink(issueKey);
+    const issueUrl = getJiraIssueUrl(jiraIssueKey);
     const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
-
     const markdown = new vscode.MarkdownString(
-      `## [${issueKey}: ${issueContent.summary}](${issueLink})
+      `## [${jiraIssueKey}: ${jiraIssueContent.summary}](${issueUrl})
       \n`
     );
-
     markdown.appendMarkdown(
-      `${convertJiraMarkdownToNormalMarkdown(issueContent.description)}
+      `${convertJiraMarkdownToNormalMarkdown(jiraIssueContent.description)}
       \n`
     );
-
     markdown.appendMarkdown(`---\n`);
-
-    if (issueContent.assignee) {
+    const issueType = jiraIssueContent.issuetype;
+    if (issueType) {
+      markdown.appendMarkdown(`Type: ${issueType.name}`);
+    }
+    const issueStatus = jiraIssueContent.status;
+    const issueResolution = jiraIssueContent.resolution;
+    if (issueStatus) {
+      if (issueType) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
+      }
+      markdown.appendMarkdown(`Status: ${issueStatus.name}`);
+      if (issueResolution) {
+        markdown.appendMarkdown(` (${issueResolution.name})`);
+      }
+    }
+    const assignee: JiraUserInfo | undefined = jiraIssueContent.assignee;
+    if (assignee) {
+      if (issueType || issueStatus) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
+      }
       markdown.appendMarkdown(
         `Assignee: [${
-          issueContent.assignee.displayName
-        }](https://${getJiraHost()}/secure/ViewProfile.jspa?name=${
-          issueContent.assignee.name
-        }&selectedTab=jira.user.profile.panels:user-profile-summary-panel)${indent}|${indent}`
+          assignee.displayName
+        }](${getJiraProfileUrl(assignee.name)})`
       );
-    } else {
-      markdown.appendMarkdown(`Assignee: Unassigned${indent}|${indent}`);
     }
-
-    markdown.appendMarkdown(
-      `Status: [${issueContent.status.name}](${issueLink})${indent}|${indent}`
-    );
-
-    const versionList = issueContent.fixVersions.map(
-      (fixVersion: any) => fixVersion.name
-    );
-    const fixVersions = versionList.length
-      ? versionList.join(', ')
-      : 'No fix version found';
-    markdown.appendMarkdown(`Fix Version/s: ${fixVersions}${indent}|${indent}`);
-
-    markdown.appendMarkdown('Attachments: ');
-    if (issueContent.attachment.length > 0) {
-      for (let i = 0; i < issueContent.attachment.length; i++) {
-        const numbering = i + 1;
-        markdown.appendMarkdown(
-          `[(${numbering})](${issueContent.attachment[i].content}) `
-        );
+    const fixVersions = jiraIssueContent.fixVersions;
+    if (fixVersions && fixVersions.length > 0) {
+      if (issueType || issueStatus || assignee) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
       }
-    } else {
-      markdown.appendMarkdown(`No attachment found`);
+      const fixVersionsMarkdown = fixVersions
+        .map(
+          (v: JiraVersionInfo) =>
+            `[${v.name}](${getJiraQueryUrl('fixVersion', v.name)})`
+        )
+        .join(', ');
+      markdown.appendMarkdown(`Fix Versions: ${fixVersionsMarkdown}`);
     }
-
     return markdown;
   }
 

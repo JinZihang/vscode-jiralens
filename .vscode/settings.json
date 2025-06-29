@@ -17,10 +17,13 @@
     "commitlint",
     "commitlintrc",
     "conventionalcommits",
+    "issuelinks",
+    "issuetype",
     "jinzihang",
     "jiralens",
     "nosources",
     "prosemirror",
+    "resolutiondate",
     "vscodeignore",
     "wikimarkup"
   ]

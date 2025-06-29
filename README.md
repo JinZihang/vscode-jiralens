@@ -66,7 +66,7 @@ Experience automatic updates and display of Jira issue content for the active li
 
 Effortlessly review multiple Jira issues side by side for comprehensive project management.
 
-<img src='resources/readme/multiple-jira-issue-tabs.png' alt='multiple-jira-issue-tabs.png' width='750'>
+<img src='resources/readme/multiple-jira-issue-tabs.gif' alt='multiple-jira-issue-tabs.gif' width='750'>
 
 ### Comprehensive Commands
 
