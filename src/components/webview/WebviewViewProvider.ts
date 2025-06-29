@@ -460,7 +460,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       const authorHTML = authorUrl
         ? `<a href="${authorUrl}">${authorName}</a>`
         : authorName;
-      const date = new Date(comment.updated).toLocaleDateString();
+      const date = new Date(comment.created).toLocaleDateString();
       const body = convertJiraMarkdownToHtml(comment.body);
       return `<tr>
           <td>📫</td>
