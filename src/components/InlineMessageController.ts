@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import JiraApi from 'jira-client';
 import {
-  getJiraHost,
   getShowInlineCommitMessage,
   getShowInlineCommitter,
   getShowInlineJiraIssueKey,
@@ -11,9 +10,12 @@ import {
   convertJiraMarkdownToNormalMarkdown,
   getJiraIssueContent,
   getJiraIssueKey,
-  getJiraIssueUrl
+  getJiraIssueUrl,
+  getJiraProfileUrl,
+  getJiraQueryUrl
 } from '../services/jira';
 import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
+import { JiraUserInfo, JiraVersionInfo } from '../services/jira.types';
 
 export default class InlineMessageController {
   private static _instance: InlineMessageController;
@@ -120,43 +122,54 @@ export default class InlineMessageController {
   ): vscode.MarkdownString {
     const issueUrl = getJiraIssueUrl(jiraIssueKey);
     const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
-
     const markdown = new vscode.MarkdownString(
       `## [${jiraIssueKey}: ${jiraIssueContent.summary}](${issueUrl})
       \n`
     );
-
     markdown.appendMarkdown(
       `${convertJiraMarkdownToNormalMarkdown(jiraIssueContent.description)}
       \n`
     );
-
     markdown.appendMarkdown(`---\n`);
-
-    if (jiraIssueContent.assignee) {
+    const issueType = jiraIssueContent.issuetype;
+    if (issueType) {
+      markdown.appendMarkdown(`Type: ${issueType.name}`);
+    }
+    const issueStatus = jiraIssueContent.status;
+    const issueResolution = jiraIssueContent.resolution;
+    if (issueStatus) {
+      if (issueType) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
+      }
+      markdown.appendMarkdown(`Status: ${issueStatus.name}`);
+      if (issueResolution) {
+        markdown.appendMarkdown(` (${issueResolution.name})`);
+      }
+    }
+    const assignee: JiraUserInfo | undefined = jiraIssueContent.assignee;
+    if (assignee) {
+      if (issueType || issueStatus) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
+      }
       markdown.appendMarkdown(
         `Assignee: [${
-          jiraIssueContent.assignee.displayName
-        }](https://${getJiraHost()}/secure/ViewProfile.jspa?name=${
-          jiraIssueContent.assignee.name
-        }&selectedTab=jira.user.profile.panels:user-profile-summary-panel)${indent}|${indent}`
+          assignee.displayName
+        }](${getJiraProfileUrl(assignee.name)})`
       );
-    } else {
-      markdown.appendMarkdown(`Assignee: Unassigned${indent}|${indent}`);
     }
-
-    markdown.appendMarkdown(
-      `Status: [${jiraIssueContent.status.name}](${issueUrl})${indent}|${indent}`
-    );
-
-    const versionList = jiraIssueContent.fixVersions.map(
-      (fixVersion: any) => fixVersion.name
-    );
-    const fixVersions = versionList.length
-      ? versionList.join(', ')
-      : 'No fix version found';
-    markdown.appendMarkdown(`Fix Version/s: ${fixVersions}${indent}`);
-
+    const fixVersions = jiraIssueContent.fixVersions;
+    if (fixVersions && fixVersions.length > 0) {
+      if (issueType || issueStatus || assignee) {
+        markdown.appendMarkdown(`${indent}|${indent}`);
+      }
+      const fixVersionsMarkdown = fixVersions
+        .map(
+          (v: JiraVersionInfo) =>
+            `[${v.name}](${getJiraQueryUrl('fixVersion', v.name)})`
+        )
+        .join(', ');
+      markdown.appendMarkdown(`Fix Versions: ${fixVersionsMarkdown}`);
+    }
     return markdown;
   }
 
