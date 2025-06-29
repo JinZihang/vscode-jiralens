@@ -11,7 +11,7 @@ import {
   convertJiraMarkdownToNormalMarkdown,
   getJiraIssueContent,
   getJiraIssueKey,
-  getJiraIssueLink
+  getJiraIssueUrl
 } from '../services/jira';
 import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
 
@@ -115,30 +115,30 @@ export default class InlineMessageController {
   }
 
   private getHoverModalMarkdown(
-    issueKey: string,
-    issueContent: JiraApi.JsonResponse
+    jiraIssueKey: string,
+    jiraIssueContent: JiraApi.JsonResponse
   ): vscode.MarkdownString {
-    const issueLink = getJiraIssueLink(issueKey);
+    const issueUrl = getJiraIssueUrl(jiraIssueKey);
     const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
 
     const markdown = new vscode.MarkdownString(
-      `## [${issueKey}: ${issueContent.summary}](${issueLink})
+      `## [${jiraIssueKey}: ${jiraIssueContent.summary}](${issueUrl})
       \n`
     );
 
     markdown.appendMarkdown(
-      `${convertJiraMarkdownToNormalMarkdown(issueContent.description)}
+      `${convertJiraMarkdownToNormalMarkdown(jiraIssueContent.description)}
       \n`
     );
 
     markdown.appendMarkdown(`---\n`);
 
-    if (issueContent.assignee) {
+    if (jiraIssueContent.assignee) {
       markdown.appendMarkdown(
         `Assignee: [${
-          issueContent.assignee.displayName
+          jiraIssueContent.assignee.displayName
         }](https://${getJiraHost()}/secure/ViewProfile.jspa?name=${
-          issueContent.assignee.name
+          jiraIssueContent.assignee.name
         }&selectedTab=jira.user.profile.panels:user-profile-summary-panel)${indent}|${indent}`
       );
     } else {
@@ -146,10 +146,10 @@ export default class InlineMessageController {
     }
 
     markdown.appendMarkdown(
-      `Status: [${issueContent.status.name}](${issueLink})${indent}|${indent}`
+      `Status: [${jiraIssueContent.status.name}](${issueUrl})${indent}|${indent}`
     );
 
-    const versionList = issueContent.fixVersions.map(
+    const versionList = jiraIssueContent.fixVersions.map(
       (fixVersion: any) => fixVersion.name
     );
     const fixVersions = versionList.length

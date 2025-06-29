@@ -18,16 +18,6 @@ h3 {
   margin-bottom: 5px;
 }
 
-table {
-  border-collapse: collapse;
-}
-table,
-th,
-td {
-  border: 1px solid white;
-  padding: 8px;
-}
-
 ul {
   padding-left: 14px;
 }
@@ -47,40 +37,45 @@ ol {
   flex-direction: column;
 }
 
-/* Details */
-#issue-details {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 1rem;
-}
-#issue-details-keys {
-  display: flex;
-  flex-direction: column;
-  margin-right: 2rem;
-}
-#issue-details-values {
-  display: flex;
-  flex-direction: column;
-}
-#priority-icon {
-  width: 12px;
-  height: 12px;
-}
-
 /* Profiles */
 #profiles {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .profile {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 .user-avatar {
   width: 24px;
   height: 24px;
-  margin-right: 10px;
+  margin-right: 5px;
+}
+
+/* Dates */
+#issue-dates {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Details */
+#issue-details-table {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-collapse: separate;
+  border-spacing: 5px 0px;
+}
+#issue-details-table tr {
+  vertical-align: top;
+  text-align: left;
+}
+#type-icon,
+#status-icon,
+#priority-icon {
+  width: 12px;
+  height: 12px;
 }
 
 /* Description */
@@ -95,8 +90,27 @@ ol {
   margin-bottom: 1rem;
 }
 
-/* Comments */
-#comments {
+/* Issue Links */
+#issue-links-table {
+  width: 100%;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  border-collapse: separate;
+  border-spacing: 5px 5px;
+}
+.issue-link-details {
+  padding-left: 18px;
+}
+
+/* Comments */
+#comments-table {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-collapse: separate;
+  border-spacing: 5px 5px;
+}
+#comments-table tr {
+  vertical-align: top;
+  text-align: left;
 }

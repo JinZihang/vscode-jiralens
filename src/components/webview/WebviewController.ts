@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import Extension from '../Extension';
 import WebviewViewProvider from './WebviewViewProvider';
-import { getJiraIssueContent, getJiraIssueLink } from '../../services/jira';
+import { getJiraIssueContent, getJiraIssueUrl } from '../../services/jira';
 
 export default class WebviewController {
   private static _instance: WebviewController;
@@ -42,11 +42,11 @@ export default class WebviewController {
       return;
     }
     this._webviewProvider.setLoadingJiraIssueView();
-    const jiraIssueLink = getJiraIssueLink(jiraIssueKey);
+    const jiraIssueUrl = getJiraIssueUrl(jiraIssueKey);
     const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
     this._webviewProvider.setJiraIssueView(
       jiraIssueKey,
-      jiraIssueLink,
+      jiraIssueUrl,
       jiraIssueContent
     );
   }

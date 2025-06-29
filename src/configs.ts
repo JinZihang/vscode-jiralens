@@ -23,7 +23,7 @@ export async function setJiraHost(host: string): Promise<boolean> {
 
 // jiralens.jiraBearerToken
 export function getJiraBearerToken(): string {
-  return wsConfig.get('jiraBearerToken') || '';
+  return wsConfig.get('jiraBearerToken') ?? '';
 }
 export async function setJiraBearerToken(token: string): Promise<boolean> {
   try {
