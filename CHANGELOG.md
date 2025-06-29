@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.4.0 - 29 Jun 2025
+
+- Update the webview and hover modal contents
+- Update the demo GIFs in README.md
+
 ## 0.3.2 - 01 Apr 2024
 
 - Correct and refactor the markdown-conversion-failure messages
