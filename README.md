@@ -91,7 +91,7 @@ To ensure proper functionality, JiraLens requires the Jira host, the Jira authen
 
 You can customize the extension settings either using the VS Code settings editor or by utilizing the commands mentioned above.
 
-<img src='resources/readme/extension-settings.png' alt='extension-settings.png' width='500'>
+<img src='resources/readme/extension-settings.png' alt='extension-settings.png' width='510'>
 
 ### Jira Host
 
