@@ -1,0 +1,494 @@
+{
+  "expand": "",
+  "id": "0000001",
+  "self": "https://jira.jiralens.com/rest/api/2/issue/0000001",
+  "key": "JRL-321",
+  "fields": {
+    "fixVersions": [
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/version/162071",
+        "id": "162071",
+        "description": "",
+        "name": "Internal Release 3",
+        "archived": false,
+        "released": true,
+        "releaseDate": "2025-06-03"
+      }
+    ],
+    "resolution": {
+      "self": "https://jira.jiralens.com/rest/api/2/resolution/1",
+      "id": "1",
+      "description": "A fix for this issue is checked into the tree and tested.",
+      "name": "Fixed"
+    },
+    "priority": {
+      "self": "https://jira.jiralens.com/rest/api/2/priority/2",
+      "iconUrl": "https://jira.jiralens.com/images/icons/priorities/critical.svg",
+      "name": "2. Critical",
+      "id": "2"
+    },
+    "labels": ["bug", "inline-message"],
+    "aggregatetimeoriginalestimate": null,
+    "timeestimate": null,
+    "versions": [
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/version/155441",
+        "id": "155441",
+        "description": "QS release R1: administrative version to capture the targeted features for R1",
+        "name": "Internal Release 1",
+        "archived": false,
+        "released": true,
+        "releaseDate": "2025-03-25"
+      },
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/version/163470",
+        "id": "163470",
+        "description": "",
+        "name": "Internal Release 2",
+        "archived": false,
+        "released": true,
+        "releaseDate": "2025-06-18"
+      }
+    ],
+    "issuelinks": [
+      {
+        "id": "7789742",
+        "self": "https://jira.jiralens.com/rest/api/2/issueLink/7789742",
+        "type": {
+          "id": "10770",
+          "name": "ProblemReport",
+          "inward": "is reported by",
+          "outward": "reports",
+          "self": "https://jira.jiralens.com/rest/api/2/issueLinkType/10770"
+        },
+        "inwardIssue": {
+          "id": "8596783",
+          "key": "JRL-132",
+          "self": "https://jira.jiralens.com/rest/api/2/issue/8596783",
+          "fields": {
+            "summary": "Internal Release 2 Bug Bash",
+            "status": {
+              "self": "https://jira.jiralens.com/rest/api/2/status/6",
+              "description": "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+              "iconUrl": "https://jira.jiralens.com/images/icons/statuses/closed.png",
+              "name": "Closed",
+              "id": "6",
+              "statusCategory": {
+                "self": "https://jira.jiralens.com/rest/api/2/statuscategory/3",
+                "id": 3,
+                "key": "done",
+                "colorName": "success",
+                "name": "Done"
+              }
+            },
+            "priority": {
+              "self": "https://jira.jiralens.com/rest/api/2/priority/3",
+              "iconUrl": "https://jira.jiralens.com/images/icons/priorities/major.svg",
+              "name": "3. Major",
+              "id": "3"
+            },
+            "issuetype": {
+              "self": "https://jira.jiralens.com/rest/api/2/issuetype/3",
+              "id": "3",
+              "description": "A task that needs to be done.",
+              "iconUrl": "https://jira.jiralens.com/secure/viewavatar?size=xsmall&avatarId=20268&avatarType=issuetype",
+              "name": "Task",
+              "subtask": false,
+              "avatarId": 20268
+            }
+          }
+        }
+      },
+      {
+        "id": "7869019",
+        "self": "https://jira.jiralens.com/rest/api/2/issueLink/7869019",
+        "type": {
+          "id": "10020",
+          "name": "Reference",
+          "inward": "is related to",
+          "outward": "relates to",
+          "self": "https://jira.jiralens.com/rest/api/2/issueLinkType/10020"
+        },
+        "outwardIssue": {
+          "id": "8598909",
+          "key": "JRL-111",
+          "self": "https://jira.jiralens.com/rest/api/2/issue/8598909",
+          "fields": {
+            "summary": "Inline message transition is laggy across multiple tabs",
+            "status": {
+              "self": "https://jira.jiralens.com/rest/api/2/status/6",
+              "description": "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+              "iconUrl": "https://jira.jiralens.com/images/icons/statuses/closed.png",
+              "name": "Closed",
+              "id": "6",
+              "statusCategory": {
+                "self": "https://jira.jiralens.com/rest/api/2/statuscategory/3",
+                "id": 3,
+                "key": "done",
+                "colorName": "success",
+                "name": "Done"
+              }
+            },
+            "priority": {
+              "self": "https://jira.jiralens.com/rest/api/2/priority/2",
+              "iconUrl": "https://jira.jiralens.com/images/icons/priorities/critical.svg",
+              "name": "2. Critical",
+              "id": "2"
+            },
+            "issuetype": {
+              "self": "https://jira.jiralens.com/rest/api/2/issuetype/1",
+              "id": "1",
+              "description": "A problem which impairs or prevents the functions of the product.",
+              "iconUrl": "https://jira.jiralens.com/secure/viewavatar?size=xsmall&avatarId=20253&avatarType=issuetype",
+              "name": "Bug",
+              "subtask": false,
+              "avatarId": 20253
+            }
+          }
+        }
+      }
+    ],
+    "assignee": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "jinz",
+      "key": "JIRAUSER79647",
+      "emailAddress": "zihang.jin@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Zihang Jin",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "status": {
+      "self": "https://jira.jiralens.com/rest/api/2/status/6",
+      "description": "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+      "iconUrl": "https://jira.jiralens.com/images/icons/statuses/closed.png",
+      "name": "Closed",
+      "id": "6",
+      "statusCategory": {
+        "self": "https://jira.jiralens.com/rest/api/2/statuscategory/3",
+        "id": 3,
+        "key": "done",
+        "colorName": "success",
+        "name": "Done"
+      }
+    },
+    "components": [
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/component/74871",
+        "id": "74871",
+        "name": "Inline Message",
+        "description": "PIM Migration Service - Extract PIM data from files and create corresponding PIM representative."
+      }
+    ],
+    "archiveddate": null,
+    "aggregatetimeestimate": null,
+    "creator": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "jinz",
+      "key": "JIRAUSER79647",
+      "emailAddress": "zihang.jin@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Zihang Jin",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "subtasks": [],
+    "reporter": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "poa",
+      "key": "JIRAUSER79647",
+      "emailAddress": "quality.assurance.a@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Quality Assurance A",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "aggregateprogress": {
+      "progress": 0,
+      "total": 0
+    },
+    "progress": {
+      "progress": 0,
+      "total": 0
+    },
+    "votes": {
+      "self": "https://jira.jiralens.com/rest/api/2/issue/JRL-001/votes",
+      "votes": 0,
+      "hasVoted": false
+    },
+    "worklog": {
+      "startAt": 0,
+      "maxResults": 20,
+      "total": 0,
+      "worklogs": []
+    },
+    "archivedby": null,
+    "issuetype": {
+      "self": "https://jira.jiralens.com/rest/api/2/issuetype/59",
+      "id": "59",
+      "description": "",
+      "iconUrl": "https://jira.jiralens.com/secure/viewavatar?size=xsmall&avatarId=20253&avatarType=issuetype",
+      "name": "Bug",
+      "subtask": false,
+      "avatarId": 20265
+    },
+    "timespent": null,
+    "project": {
+      "self": "https://jira.jiralens.com/rest/api/2/project/48195",
+      "id": "48195",
+      "key": "PIM",
+      "name": "JiraLens",
+      "projectTypeKey": "software",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/projectavatar?pid=48195&avatarId=14650",
+        "24x24": "https://jira.jiralens.com/secure/projectavatar?size=small&pid=48195&avatarId=14650",
+        "16x16": "https://jira.jiralens.com/secure/projectavatar?size=xsmall&pid=48195&avatarId=14650",
+        "32x32": "https://jira.jiralens.com/secure/projectavatar?size=medium&pid=48195&avatarId=14650"
+      },
+      "projectCategory": {
+        "self": "https://jira.jiralens.com/rest/api/2/projectCategory/10600",
+        "id": "10600",
+        "description": "",
+        "name": "jiralens 360 Cloud Core Platform"
+      }
+    },
+    "aggregatetimespent": null,
+    "resolutiondate": "2025-06-21T04:44:15.994+0000",
+    "workratio": -1,
+    "watches": {
+      "self": "https://jira.jiralens.com/rest/api/2/issue/JRL-001/watchers",
+      "watchCount": 2,
+      "isWatching": true
+    },
+    "created": "2025-06-01T06:24:00.826+0000",
+    "updated": "2025-06-23T09:01:19.504+0000",
+    "timeoriginalestimate": null,
+    "description": "Fix the issue where multiple inline messages could show up together",
+    "timetracking": {},
+    "attachment": [
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/attachment/5183784",
+        "id": "5183784",
+        "filename": "JRL-321 Reproducible steps.mp4",
+        "author": {
+          "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+          "name": "jinz",
+          "key": "JIRAUSER79647",
+          "emailAddress": "zihang.jin@jiralens.com",
+          "avatarUrls": {
+            "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+            "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+            "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+            "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+          },
+          "displayName": "Zihang Jin",
+          "active": true,
+          "timeZone": "America/Los_Angeles"
+        },
+        "created": "2025-05-08T05:17:24.267+0000",
+        "size": 57456,
+        "mimeType": "image/png",
+        "content": "https://jira.jiralens.com/secure/attachment/5183784/Screenshot+2025-05-08+at+1.17.17%E2%80%AFPM.png",
+        "thumbnail": "https://jira.jiralens.com/secure/thumbnail/5183784/_thumb_5183784.png"
+      },
+      {
+        "self": "https://jira.jiralens.com/rest/api/2/attachment/5183788",
+        "id": "5183788",
+        "filename": "JRL-321 validation.mp4",
+        "author": {
+          "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+          "name": "jinz",
+          "key": "JIRAUSER79647",
+          "emailAddress": "zihang.jin@jiralens.com",
+          "avatarUrls": {
+            "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+            "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+            "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+            "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+          },
+          "displayName": "Zihang Jin",
+          "active": true,
+          "timeZone": "America/Los_Angeles"
+        },
+        "created": "2025-05-08T05:20:57.202+0000",
+        "size": 172927,
+        "mimeType": "image/png",
+        "content": "https://jira.jiralens.com/secure/attachment/5183788/Screenshot+2025-05-08+at+1.20.54%E2%80%AFPM.png",
+        "thumbnail": "https://jira.jiralens.com/secure/thumbnail/5183788/_thumb_5183788.png"
+      }
+    ],
+    "summary": "Fix the inline message issue",
+    "environment": "FQA, STG",
+    "comment": {
+      "comments": [
+        {
+          "self": "https://jira.jiralens.com/rest/api/2/issue/0000001/comment/13926504",
+          "id": "13926504",
+          "author": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Zihang Jin",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "body": "Please provide reproducible steps for this issue.",
+          "updateAuthor": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Zihang Jin",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "created": "2025-06-02T05:21:58.663+0000",
+          "updated": "2025-06-02T05:21:58.663+0000"
+        },
+        {
+          "self": "https://jira.jiralens.com/rest/api/2/issue/0000001/comment/13947480",
+          "id": "13947480",
+          "author": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=kooc",
+            "name": "kooc",
+            "key": "kooc",
+            "emailAddress": "chee-kit.koo@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=kooc&avatarId=50672",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=kooc&avatarId=50672",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=kooc&avatarId=50672",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=kooc&avatarId=50672"
+            },
+            "displayName": "Quality Assurance A",
+            "active": true,
+            "timeZone": "Asia/Singapore"
+          },
+          "body": "Uploaded a recording on how to reproduce the issue.",
+          "updateAuthor": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=kooc",
+            "name": "kooc",
+            "key": "kooc",
+            "emailAddress": "chee-kit.koo@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=kooc&avatarId=50672",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=kooc&avatarId=50672",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=kooc&avatarId=50672",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=kooc&avatarId=50672"
+            },
+            "displayName": "Chee Kit Koo",
+            "active": true,
+            "timeZone": "Asia/Singapore"
+          },
+          "created": "2025-06-02T04:44:06.353+0000",
+          "updated": "2025-05-13T04:44:06.353+0000"
+        },
+        {
+          "self": "https://jira.jiralens.com/rest/api/2/issue/0000001/comment/13965441",
+          "id": "13965441",
+          "author": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Zihang Jin",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "body": "Thanks!",
+          "updateAuthor": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Zihang Jin",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "created": "2025-06-02T09:09:26.867+0000",
+          "updated": "2025-05-15T09:09:26.867+0000"
+        },
+        {
+          "self": "https://jira.jiralens.com/rest/api/2/issue/0000001/comment/13971936",
+          "id": "13971936",
+          "author": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Quality Assurance A",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "body": "Validated the fix in FQA.",
+          "updateAuthor": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Quality Assurance A",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "created": "2025-06-21T06:39:45.605+0000",
+          "updated": "2025-05-16T06:39:45.605+0000"
+        }
+      ],
+      "maxResults": 4,
+      "total": 4,
+      "startAt": 0
+    }
+  },
+  "properties": {}
+}
