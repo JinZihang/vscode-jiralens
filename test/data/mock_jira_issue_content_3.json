@@ -1,0 +1,199 @@
+{
+  "expand": "",
+  "id": "0000001",
+  "self": "https://jira.jiralens.com/rest/api/2/issue/0000001",
+  "key": "JRL-000",
+  "fields": {
+    "fixVersions": [],
+    "resolution": {
+      "self": "https://jira.jiralens.com/rest/api/2/resolution/1",
+      "id": "1",
+      "description": "A fix for this issue is checked into the tree and tested.",
+      "name": "Done"
+    },
+    "priority": {
+      "self": "https://jira.jiralens.com/rest/api/2/priority/2",
+      "iconUrl": "https://jira.jiralens.com/images/icons/priorities/minor.svg",
+      "name": "4. Minor",
+      "id": "2"
+    },
+    "labels": ["refactor", "markdown"],
+    "aggregatetimeoriginalestimate": null,
+    "timeestimate": null,
+    "versions": [],
+    "issuelinks": [],
+    "assignee": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "jinz",
+      "key": "JIRAUSER79647",
+      "emailAddress": "zihang.jin@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Zihang Jin",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "status": {
+      "self": "https://jira.jiralens.com/rest/api/2/status/6",
+      "description": "The issue is considered finished, the resolution is correct. Issues which are closed can be reopened.",
+      "iconUrl": "https://jira.jiralens.com/images/icons/statuses/closed.png",
+      "name": "Closed",
+      "id": "6",
+      "statusCategory": {
+        "self": "https://jira.jiralens.com/rest/api/2/statuscategory/3",
+        "id": 3,
+        "key": "done",
+        "colorName": "success",
+        "name": "Done"
+      }
+    },
+    "components": [],
+    "archiveddate": null,
+    "aggregatetimeestimate": null,
+    "creator": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "jinz",
+      "key": "JIRAUSER79647",
+      "emailAddress": "zihang.jin@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Zihang Jin",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "subtasks": [],
+    "reporter": {
+      "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+      "name": "poa",
+      "key": "JIRAUSER79647",
+      "emailAddress": "product.owner.a@jiralens.com",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+        "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+        "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+        "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+      },
+      "displayName": "Product Owner A",
+      "active": true,
+      "timeZone": "America/Los_Angeles"
+    },
+    "aggregateprogress": {
+      "progress": 0,
+      "total": 0
+    },
+    "progress": {
+      "progress": 0,
+      "total": 0
+    },
+    "votes": {
+      "self": "https://jira.jiralens.com/rest/api/2/issue/JRL-001/votes",
+      "votes": 0,
+      "hasVoted": false
+    },
+    "worklog": {
+      "startAt": 0,
+      "maxResults": 20,
+      "total": 0,
+      "worklogs": []
+    },
+    "archivedby": null,
+    "issuetype": {
+      "self": "https://jira.jiralens.com/rest/api/2/issuetype/3",
+      "id": "3",
+      "description": "A task that needs to be done.",
+      "iconUrl": "https://jira.jiralens.com/secure/viewavatar?size=xsmall&avatarId=20268&avatarType=issuetype",
+      "name": "Task",
+      "subtask": false,
+      "avatarId": 20268
+    },
+    "timespent": null,
+    "project": {
+      "self": "https://jira.jiralens.com/rest/api/2/project/48195",
+      "id": "48195",
+      "key": "PIM",
+      "name": "JiraLens",
+      "projectTypeKey": "software",
+      "avatarUrls": {
+        "48x48": "https://jira.jiralens.com/secure/projectavatar?pid=48195&avatarId=14650",
+        "24x24": "https://jira.jiralens.com/secure/projectavatar?size=small&pid=48195&avatarId=14650",
+        "16x16": "https://jira.jiralens.com/secure/projectavatar?size=xsmall&pid=48195&avatarId=14650",
+        "32x32": "https://jira.jiralens.com/secure/projectavatar?size=medium&pid=48195&avatarId=14650"
+      },
+      "projectCategory": {
+        "self": "https://jira.jiralens.com/rest/api/2/projectCategory/10600",
+        "id": "10600",
+        "description": "",
+        "name": "jiralens 360 Cloud Core Platform"
+      }
+    },
+    "aggregatetimespent": null,
+    "resolutiondate": "2025-05-02T04:44:15.994+0000",
+    "workratio": -1,
+    "watches": {
+      "self": "https://jira.jiralens.com/rest/api/2/issue/JRL-001/watchers",
+      "watchCount": 2,
+      "isWatching": true
+    },
+    "created": "2025-05-01T06:24:00.826+0000",
+    "updated": "2025-05-03T09:01:19.504+0000",
+    "timeoriginalestimate": null,
+    "description": "There are several available packages for parsing Jira markdown to HTML. Make use of them to simplify the current approach.",
+    "timetracking": {},
+    "attachment": [],
+    "summary": "Refactor the approach of parsing Jira markdown",
+    "environment": "FQA, STG, PROD",
+    "comment": {
+      "comments": [
+        {
+          "self": "https://jira.jiralens.com/rest/api/2/issue/0000001/comment/13971936",
+          "id": "13971936",
+          "author": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Quality Assurance A",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "body": "Validated the change, no visible difference from the end user perspective.",
+          "updateAuthor": {
+            "self": "https://jira.jiralens.com/rest/api/2/user?username=jinz",
+            "name": "jinz",
+            "key": "JIRAUSER79647",
+            "emailAddress": "zihang.jin@jiralens.com",
+            "avatarUrls": {
+              "48x48": "https://jira.jiralens.com/secure/useravatar?ownerId=JIRAUSER79647&avatarId=63157",
+              "24x24": "https://jira.jiralens.com/secure/useravatar?size=small&ownerId=JIRAUSER79647&avatarId=63157",
+              "16x16": "https://jira.jiralens.com/secure/useravatar?size=xsmall&ownerId=JIRAUSER79647&avatarId=63157",
+              "32x32": "https://jira.jiralens.com/secure/useravatar?size=medium&ownerId=JIRAUSER79647&avatarId=63157"
+            },
+            "displayName": "Zihang Jin",
+            "active": true,
+            "timeZone": "America/Los_Angeles"
+          },
+          "created": "2025-05-03T06:39:45.605+0000",
+          "updated": "2025-05-16T06:39:45.605+0000"
+        }
+      ],
+      "maxResults": 4,
+      "total": 4,
+      "startAt": 0
+    }
+  },
+  "properties": {}
+}
