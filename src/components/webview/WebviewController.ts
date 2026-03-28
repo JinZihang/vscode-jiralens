@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
+
+import { getJiraIssueContent, getJiraIssueUrl } from '../../services/jira';
 import Extension from '../Extension';
 import WebviewViewProvider from './WebviewViewProvider';
-import { getJiraIssueContent, getJiraIssueUrl } from '../../services/jira';
 
 export default class WebviewController {
   private static _instance: WebviewController;

@@ -26,7 +26,7 @@ Encountering challenges or envisioning new features? Share your experiences and 
 
 ### Overview
 
-JiraLens is a Visual Studio Code (VS Code) extension tailored for developers seeking deeper insights into their codebase. It serves as a bridge between your code and the comprehensive information available on Jira pages.
+JiraLens is a Visual Studio Code (VS Code) extension tailored for developers seeking deeper insights into their codebase ([Extension Marketplace link](https://marketplace.visualstudio.com/items?itemName=jinzihang.jiralens)). It serves as a bridge between your code and the comprehensive information available on Jira pages.
 
 ### Why JiraLens?
 

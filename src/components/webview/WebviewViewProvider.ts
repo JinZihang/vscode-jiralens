@@ -1,20 +1,21 @@
-import * as vscode from 'vscode';
 import JiraApi from 'jira-client';
+import * as vscode from 'vscode';
+
 import {
   convertJiraMarkdownToHtml,
   getJiraIssueUrl as getJiraIssueUrl,
-  getJiraQueryUrl,
-  getJiraProfileUrl
+  getJiraProfileUrl,
+  getJiraQueryUrl
 } from '../../services/jira';
-import { getNonce } from '../../utils';
 import {
   JiraAttachmentInfo,
   JiraCommentInfo,
-  JiraVersionInfo,
+  JiraComponentInfo,
   JiraIssueLinkInfo,
   JiraUserInfo,
-  JiraComponentInfo
+  JiraVersionInfo
 } from '../../services/jira.types';
+import { getNonce } from '../../utils';
 
 export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   static readonly viewType = 'jiralens';

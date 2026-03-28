@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
+
 import { STATUS_BAR_ITEM_ACTIVE } from '../commands';
+import { getJiraIssueContent, getJiraIssueUrl } from '../services/jira';
 import Extension from './Extension';
 import WebviewViewProvider from './webview/WebviewViewProvider';
-import { getJiraIssueContent, getJiraIssueUrl } from '../services/jira';
 
 export default class StatusBarItemController {
   private static _instance: StatusBarItemController;
