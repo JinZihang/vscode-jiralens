@@ -1,9 +1,10 @@
-import JiraApi from 'jira-client';
-import { DOMSerializer } from 'prosemirror-model';
 import { defaultSchema } from '@atlaskit/adf-schema/schema-default';
 import { WikiMarkupTransformer } from '@atlaskit/editor-wikimarkup-transformer';
+import JiraApi from 'jira-client';
 import { JSDOM } from 'jsdom';
+import { DOMSerializer } from 'prosemirror-model';
 import TurndownService from 'turndown';
+
 import {
   getJiraBearerToken,
   getJiraHost,

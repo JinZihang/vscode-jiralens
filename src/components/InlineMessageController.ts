@@ -1,11 +1,13 @@
-import * as vscode from 'vscode';
 import JiraApi from 'jira-client';
+import * as vscode from 'vscode';
+
 import {
   getShowInlineCommitMessage,
   getShowInlineCommitter,
   getShowInlineJiraIssueKey,
   getShowInlineRelativeCommitTime
 } from '../configs';
+import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
 import {
   convertJiraMarkdownToNormalMarkdown,
   getJiraIssueContent,
@@ -14,7 +16,6 @@ import {
   getJiraProfileUrl,
   getJiraQueryUrl
 } from '../services/jira';
-import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
 import { JiraUserInfo, JiraVersionInfo } from '../services/jira.types';
 
 export default class InlineMessageController {

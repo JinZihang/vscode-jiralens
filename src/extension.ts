@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
-import { syncWorkspaceConfiguration } from './configs';
+
 import registerCommands from './commands';
 import Extension from './components/Extension';
-import StatusBarItemController from './components/StatusBarItemController';
 import InlineMessageController from './components/InlineMessageController';
+import StatusBarItemController from './components/StatusBarItemController';
 import WebviewController from './components/webview/WebviewController';
+import { syncWorkspaceConfiguration } from './configs';
 import { runGitBlameCommand } from './services/git';
 import { getJiraIssueKey } from './services/jira';
 import { delay } from './utils';
