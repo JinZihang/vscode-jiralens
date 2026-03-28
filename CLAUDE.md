@@ -9,13 +9,16 @@ JiraLens bridges the gap between your code and Jira. It runs `git blame` on the 
 ## Build & Development
 
 ```bash
-npm run compile      # single webpack build (dev)
-npm run watch        # webpack watch mode
-npm run package      # production build (hidden source map)
-npm run lint         # eslint src/**/*.ts
-npm run format       # prettier --write
-npm run format:check # prettier --check (CI)
-npm run test         # placeholder – no real tests yet
+npm run compile           # single webpack build (dev)
+npm run watch             # webpack watch mode
+npm run package           # production build (hidden source map)
+npm run lint              # eslint src/**/*.ts
+npm run format            # prettier --write
+npm run format:check      # prettier --check (CI)
+npm run test              # lint + unit tests (used by pre-push hook)
+npm run test:unit         # vitest run (one-shot)
+npm run test:unit:watch   # vitest watch (dev loop)
+npm run test:integration  # placeholder – see test/integration/README.md
 ```
 
 The compiled output is `dist/extension.js` (defined by `main` in `package.json`).
@@ -42,6 +45,17 @@ src/
     git.types.ts                     # GitBlameInfo, GitBlameCommandInfo interfaces
     jira.ts                          # Jira REST API calls + markdown conversion helpers
     jira.types.ts                    # Jira-related type definitions
+test/
+  __mocks__/
+    vscode.ts                        # Minimal vscode API mock (used by vitest alias)
+  unit/                              # Vitest unit tests (no VS Code host required)
+    utils.test.ts
+    services/
+      git.test.ts
+      jira.test.ts
+  integration/                       # Future: @vscode/test-cli + @vscode/test-electron
+    README.md                        # Setup instructions and planned structure
+  data/                              # Shared mock JSON fixtures
 ```
 
 ## Architecture Patterns
@@ -76,7 +90,7 @@ src/
 - **Hooks** (husky):
   - `pre-commit`: lint-staged (eslint fix + prettier on staged `.ts` files)
   - `commit-msg`: commitlint
-  - `pre-push`: `npm run test` (currently a placeholder, always passes)
+  - `pre-push`: `npm run test:unit`
 - **Releases**: semantic-release on `main` — bumps `package.json`, generates `CHANGELOG.md`, creates a GitHub release.
 - **PRs**: Use the template in `.github/pull_request_template.md` (description, previous/current behavior, checklist).
 
@@ -90,3 +104,4 @@ src/
 | `prosemirror-model`                       | Serialize ProseMirror nodes to HTML   |
 | `jsdom`                                   | Headless DOM for HTML serialization   |
 | `turndown`                                | HTML → Markdown                       |
+| `vitest`                                  | Unit test runner                      |

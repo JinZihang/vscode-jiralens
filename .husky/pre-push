@@ -9,4 +9,4 @@ v=${b%%[)| ]*}
 export PATH="$NVM_DIR/versions/node/$v/bin:$PATH"
 
 npm run format:check
-npm run test
+npm run test:unit
