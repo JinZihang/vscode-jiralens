@@ -132,18 +132,17 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "lint": "eslint src --ext ts",
+    "format": "prettier --write './**/*.{js,ts,md,json}' --config ./.prettierrc",
+    "format:check": "prettier --check './**/*.{js,ts,md,json}' --config ./.prettierrc",
     "pretest": "npm run lint",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest watch",
     "test:integration": "echo \"Integration tests not yet configured - see test/integration/README.md\"",
-    "format:check": "prettier --check './**/*.{js,ts,md,json}' --config ./.prettierrc",
-    "format": "prettier --write './**/*.{js,ts,md,json}' --config ./.prettierrc",
     "prepare": "husky"
   },
   "dependencies": {
@@ -157,8 +156,6 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@types/jira-client": "^7.1.9",
     "@types/jsdom": "^21.1.6",
     "@types/node": "22.x",
@@ -170,7 +167,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "husky": "^9.1.7",
     "prettier": "^3.0.3",
-    "semantic-release": "^24.2.5",
     "ts-loader": "^9.5.0",
     "typescript": "~5.3.0",
     "vitest": "^4.1.2",
@@ -186,34 +182,6 @@
     "*.ts": [
       "eslint --fix",
       "prettier --write --ignore-unknown"
-    ]
-  },
-  "release": {
-    "repositoryUrl": "https://github.com/JinZihang/vscode-jiralens",
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits"
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "CHANGELOG.md",
-            "package.json",
-            "package-lock.json"
-          ],
-          "message": "chore(release): ${nextRelease.version} [skip ci]"
-        }
-      ],
-      "@semantic-release/github"
     ]
   }
 }
