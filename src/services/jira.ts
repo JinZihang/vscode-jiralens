@@ -44,7 +44,6 @@ export function getJiraQueryUrl(key: string, value: string): string {
 
 export function isValidJiraBearerToken(token: string): boolean {
   try {
-    // The validation approach here is not tested yet
     new JiraApi({
       protocol: 'https',
       host: getJiraHost(),
