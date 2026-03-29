@@ -1,26 +1,26 @@
 {
   "name": "jiralens",
-  "icon": "resources/jiralens.png",
   "displayName": "JiraLens",
   "description": "A Visual Studio Code (VS Code) extension designed to bridge the gap between your code and the rich information available on Jira.",
-  "categories": [
-    "Other"
-  ],
   "version": "0.4.0",
+  "publisher": "jinzihang",
   "author": {
     "name": "JiraLens",
     "email": "zihang.jin@gmail.com"
   },
-  "publisher": "jinzihang",
+  "license": "Apache-2.0",
+  "icon": "resources/jiralens.png",
   "homepage": "https://marketplace.visualstudio.com/items?itemName=jinzihang.jiralens",
   "repository": {
     "type": "git",
     "url": "https://github.com/JinZihang/vscode-jiralens"
   },
-  "license": "Apache-2.0",
   "keywords": [
     "vscode-extension",
     "jira"
+  ],
+  "categories": [
+    "Other"
   ],
   "engines": {
     "vscode": "^1.84.0"
