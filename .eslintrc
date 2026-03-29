@@ -2,7 +2,7 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2020,
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "simple-import-sort"],
@@ -10,17 +10,17 @@
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
     "@typescript-eslint/naming-convention": [
-      "warn",
+      "error",
       {
         "selector": "import",
         "format": ["camelCase", "PascalCase"]
       }
     ],
-    "@typescript-eslint/semi": "warn",
-    "curly": "warn",
-    "eqeqeq": "warn",
-    "no-throw-literal": "warn",
-    "no-unused-vars": "warn"
+    "@typescript-eslint/semi": "error",
+    "curly": "error",
+    "eqeqeq": "error",
+    "no-throw-literal": "error",
+    "no-unused-vars": "error"
   },
   "ignorePatterns": ["node_modules", "**/*.d.ts", "out", "dist"]
 }

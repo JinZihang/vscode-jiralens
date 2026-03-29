@@ -7,16 +7,29 @@ vi.mock('../../../src/configs', () => ({
   getJiraBearerToken: vi.fn().mockReturnValue('test-token')
 }));
 
+const { MockJiraApi, mockFindIssue } = vi.hoisted(() => {
+  const mockFindIssue = vi.fn();
+  const MockJiraApi = vi.fn(function () {
+    return { findIssue: mockFindIssue };
+  });
+  return { MockJiraApi, mockFindIssue };
+});
+vi.mock('jira-client', () => ({ default: MockJiraApi }));
+
 import { getJiraHost, getJiraProjectKeys } from '../../../src/configs';
 import {
   convertJiraMarkdownToHtml,
   convertJiraMarkdownToNormalMarkdown,
+  getJiraIssueContent,
   getJiraIssueKey,
   getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl,
+  isValidJiraBearerToken,
   isValidJiraProjectKey
 } from '../../../src/services/jira';
+import mockIssue1 from '../../data/mock_jira_issue_content_1.json';
+import mockIssue2 from '../../data/mock_jira_issue_content_2.json';
 
 describe('isValidJiraProjectKey', () => {
   it('returns true for an all-uppercase alphabetic key', () => {
@@ -172,6 +185,71 @@ describe('convertJiraMarkdownToHtml', () => {
     const result = convertJiraMarkdownToHtml('any input');
     expect(result).toContain('issues/23');
     transformer.WikiMarkupTransformer = original;
+  });
+});
+
+describe('isValidJiraBearerToken', () => {
+  it('returns true when JiraApi constructs without throwing', () => {
+    MockJiraApi.mockImplementation(function () {
+      return { findIssue: mockFindIssue };
+    });
+    expect(isValidJiraBearerToken('valid-token')).toBe(true);
+  });
+
+  it('returns true for an empty string token (no validation beyond construction)', () => {
+    MockJiraApi.mockImplementation(function () {
+      return { findIssue: mockFindIssue };
+    });
+    expect(isValidJiraBearerToken('')).toBe(true);
+  });
+
+  it('returns false when JiraApi constructor throws', () => {
+    MockJiraApi.mockImplementation(function () {
+      throw new Error('invalid config');
+    });
+    expect(isValidJiraBearerToken('bad-token')).toBe(false);
+  });
+});
+
+describe('getJiraIssueContent', () => {
+  beforeEach(() => {
+    MockJiraApi.mockImplementation(function () {
+      return { findIssue: mockFindIssue };
+    });
+  });
+
+  it('returns the issue data resolved by findIssue', async () => {
+    mockFindIssue.mockResolvedValue(mockIssue1);
+    const result = await getJiraIssueContent('JRL-001');
+    expect(result).toEqual(mockIssue1);
+    expect(mockFindIssue).toHaveBeenCalledWith('JRL-001');
+  });
+
+  it('uses a different issue fixture and passes the key through', async () => {
+    mockFindIssue.mockResolvedValue(mockIssue2);
+    const result = await getJiraIssueContent('JRL-321');
+    expect(result).toEqual(mockIssue2);
+    expect(mockFindIssue).toHaveBeenCalledWith('JRL-321');
+  });
+
+  it('constructs JiraApi with the host and token from config', async () => {
+    mockFindIssue.mockResolvedValue(mockIssue1);
+    await getJiraIssueContent('JRL-001');
+    expect(MockJiraApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        protocol: 'https',
+        host: 'jira.example.com',
+        apiVersion: '2',
+        bearer: 'test-token'
+      })
+    );
+  });
+
+  it('propagates errors thrown by findIssue', async () => {
+    mockFindIssue.mockRejectedValue(new Error('network failure'));
+    await expect(getJiraIssueContent('JRL-001')).rejects.toThrow(
+      'network failure'
+    );
   });
 });
 
