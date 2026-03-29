@@ -8,7 +8,7 @@ export function syncWorkspaceConfiguration(): void {
 
 // jiralens.jiraHost
 export function getJiraHost(): string {
-  return wsConfig.get('jiraHost') || '';
+  return wsConfig.get<string>('jiraHost') || '';
 }
 export async function setJiraHost(host: string): Promise<boolean> {
   try {
@@ -23,7 +23,7 @@ export async function setJiraHost(host: string): Promise<boolean> {
 
 // jiralens.jiraBearerToken
 export function getJiraBearerToken(): string {
-  return wsConfig.get('jiraBearerToken') ?? '';
+  return wsConfig.get<string>('jiraBearerToken') ?? '';
 }
 export async function setJiraBearerToken(token: string): Promise<boolean> {
   try {
@@ -44,7 +44,7 @@ export async function setJiraBearerToken(token: string): Promise<boolean> {
 
 // jiralens.jiraProjectKeys
 export function getJiraProjectKeys(): string[] {
-  const keys = (wsConfig.get('jiraProjectKeys') as string[]) ?? [];
+  const keys = wsConfig.get<string[]>('jiraProjectKeys') ?? [];
   return keys;
 }
 async function setJiraProjectKeys(keys: string[]): Promise<boolean> {
@@ -85,7 +85,7 @@ export async function deleteJiraProjectKey(key: string): Promise<boolean> {
 
 // jiralens.inlineCommitter
 export function getShowInlineCommitter(): boolean {
-  return wsConfig.get('inlineCommitter') ?? true;
+  return wsConfig.get<boolean>('inlineCommitter') ?? true;
 }
 export async function setShowInlineCommitter(show: boolean): Promise<boolean> {
   try {
@@ -106,7 +106,7 @@ export async function setShowInlineCommitter(show: boolean): Promise<boolean> {
 
 // jiralens.inlineRelativeCommitTime
 export function getShowInlineRelativeCommitTime(): boolean {
-  return wsConfig.get('inlineRelativeCommitTime') ?? true;
+  return wsConfig.get<boolean>('inlineRelativeCommitTime') ?? true;
 }
 export async function setShowInlineRelativeCommitTime(
   show: boolean
@@ -129,7 +129,7 @@ export async function setShowInlineRelativeCommitTime(
 
 // jiralens.inlineJiraIssueKey
 export function getShowInlineJiraIssueKey(): boolean {
-  return wsConfig.get('inlineJiraIssueKey') ?? true;
+  return wsConfig.get<boolean>('inlineJiraIssueKey') ?? true;
 }
 export async function setShowInlineJiraIssueKey(
   show: boolean
@@ -152,7 +152,7 @@ export async function setShowInlineJiraIssueKey(
 
 // jiralens.inlineCommitMessage
 export function getShowInlineCommitMessage(): boolean {
-  return wsConfig.get('inlineCommitMessage') ?? false;
+  return wsConfig.get<boolean>('inlineCommitMessage') ?? false;
 }
 export async function setShowInlineCommitMessage(
   show: boolean
