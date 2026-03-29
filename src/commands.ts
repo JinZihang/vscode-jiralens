@@ -9,6 +9,7 @@ import {
   setJiraHost,
   setShowInlineCommitMessage,
   setShowInlineCommitter,
+  setShowInlineJiraIssueKey,
   setShowInlineRelativeCommitTime
 } from './configs';
 import { isValidJiraBearerToken, isValidJiraProjectKey } from './services/jira';
@@ -148,7 +149,7 @@ function registerSetShowJiraIssueKeyCommand(): vscode.Disposable {
     if (!show) {
       return;
     }
-    setShowInlineCommitMessage(show === 'Yes');
+    setShowInlineJiraIssueKey(show === 'Yes');
   });
 }
 

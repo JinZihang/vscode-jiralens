@@ -12,7 +12,12 @@ export const window = {
   activeTextEditor: undefined,
   showErrorMessage: vi.fn(),
   showWarningMessage: vi.fn(),
-  showInformationMessage: vi.fn()
+  showInformationMessage: vi.fn(),
+  showQuickPick: vi.fn()
+};
+
+export const commands = {
+  registerCommand: vi.fn()
 };
 
 export const ConfigurationTarget = {
