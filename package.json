@@ -2,7 +2,7 @@
   "name": "jiralens",
   "displayName": "JiraLens",
   "description": "A Visual Studio Code (VS Code) extension designed to bridge the gap between your code and the rich information available on Jira.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "jinzihang",
   "author": {
     "name": "JiraLens",

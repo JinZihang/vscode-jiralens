@@ -50,6 +50,8 @@ test/
     vscode.ts                        # Minimal vscode API mock (used by vitest alias)
   unit/                              # Vitest unit tests (no VS Code host required)
     utils.test.ts
+    commands.test.ts
+    configs.test.ts
     services/
       git.test.ts
       jira.test.ts
