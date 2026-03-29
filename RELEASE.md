@@ -17,6 +17,7 @@
 ## 3. Merge to main
 
 - [ ] Open a PR from `release/x.y.z` → `main` using the PR template (`.github/pull_request_template.md`)
+- [ ] Update the PR title to `chore: release version x.y.z`
 - [ ] Get the PR reviewed and merged
 
 ## 4. Publish to VS Code Marketplace
