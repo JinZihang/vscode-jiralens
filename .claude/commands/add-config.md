@@ -236,11 +236,13 @@ if (get<PascalKey>()) {
 ## 7. Documentation (MANDATORY for user-facing configs)
 
 ### `README.md`
+
 - Add or update a subsection under **Extension Setup**.
 - If a new command was added, list it in the **Comprehensive Commands** code block.
 - If the TOC needs a new entry, add it.
 
 ### `CLAUDE.md`
+
 - Add a row to the **Configuration Keys** table:
   ```
   | `<keyName>` | type | `<default>` | Description |
