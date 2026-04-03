@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { workspace } from 'vscode';
 
 import {
+  getJiraEmail,
   getJiraProjectKeys,
   getShowInlineCommitMessage,
   getShowInlineCommitter,
@@ -15,6 +16,18 @@ const mockGet = vi.mocked(workspace.getConfiguration('jiralens').get);
 
 beforeEach(() => {
   mockGet.mockReset();
+});
+
+describe('getJiraEmail', () => {
+  it('returns the configured email', () => {
+    mockGet.mockReturnValue('user@example.com');
+    expect(getJiraEmail()).toBe('user@example.com');
+  });
+
+  it('returns an empty string when the setting is undefined', () => {
+    mockGet.mockReturnValue(undefined);
+    expect(getJiraEmail()).toBe('');
+  });
 });
 
 describe('getJiraProjectKeys', () => {

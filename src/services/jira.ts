@@ -7,6 +7,7 @@ import TurndownService from 'turndown';
 
 import {
   getJiraBearerToken,
+  getJiraEmail,
   getJiraHost,
   getJiraProjectKeys
 } from '../configs';
@@ -44,13 +45,25 @@ export function getJiraQueryUrl(key: string, value: string): string {
 
 export function isValidJiraBearerToken(token: string): boolean {
   try {
-    new JiraApi({
-      protocol: 'https',
-      host: getJiraHost(),
-      apiVersion: '2',
-      strictSSL: true,
-      bearer: token
-    });
+    const email = getJiraEmail();
+    new JiraApi(
+      email
+        ? {
+            protocol: 'https',
+            host: getJiraHost(),
+            apiVersion: '2',
+            strictSSL: true,
+            username: email,
+            password: token
+          }
+        : {
+            protocol: 'https',
+            host: getJiraHost(),
+            apiVersion: '2',
+            strictSSL: true,
+            bearer: token
+          }
+    );
     return true;
   } catch (error) {
     return false;
@@ -60,13 +73,26 @@ export function isValidJiraBearerToken(token: string): boolean {
 export async function getJiraIssueContent(
   jiraIssueKey: string
 ): Promise<JiraApi.JsonResponse | undefined> {
-  const jira = new JiraApi({
-    protocol: 'https',
-    host: getJiraHost(),
-    apiVersion: '2',
-    strictSSL: true,
-    bearer: getJiraBearerToken()
-  });
+  const email = getJiraEmail();
+  const token = getJiraBearerToken();
+  const jira = new JiraApi(
+    email
+      ? {
+          protocol: 'https',
+          host: getJiraHost(),
+          apiVersion: '2',
+          strictSSL: true,
+          username: email,
+          password: token
+        }
+      : {
+          protocol: 'https',
+          host: getJiraHost(),
+          apiVersion: '2',
+          strictSSL: true,
+          bearer: token
+        }
+  );
   const issueContent = await jira.findIssue(jiraIssueKey);
   return issueContent;
 }

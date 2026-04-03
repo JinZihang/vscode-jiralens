@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../../src/configs', () => ({
   getJiraHost: vi.fn().mockReturnValue('jira.example.com'),
   getJiraProjectKeys: vi.fn().mockReturnValue(['JRL', 'ABC']),
-  getJiraBearerToken: vi.fn().mockReturnValue('test-token')
+  getJiraBearerToken: vi.fn().mockReturnValue('test-token'),
+  getJiraEmail: vi.fn().mockReturnValue('')
 }));
 
 const { MockJiraApi, mockFindIssue } = vi.hoisted(() => {
@@ -16,7 +17,11 @@ const { MockJiraApi, mockFindIssue } = vi.hoisted(() => {
 });
 vi.mock('jira-client', () => ({ default: MockJiraApi }));
 
-import { getJiraHost, getJiraProjectKeys } from '../../../src/configs';
+import {
+  getJiraEmail,
+  getJiraHost,
+  getJiraProjectKeys
+} from '../../../src/configs';
 import {
   convertJiraMarkdownToHtml,
   convertJiraMarkdownToNormalMarkdown,
@@ -216,6 +221,7 @@ describe('getJiraIssueContent', () => {
     MockJiraApi.mockImplementation(function () {
       return { findIssue: mockFindIssue };
     });
+    vi.mocked(getJiraEmail).mockReturnValue('');
   });
 
   it('returns the issue data resolved by findIssue', async () => {
@@ -232,7 +238,7 @@ describe('getJiraIssueContent', () => {
     expect(mockFindIssue).toHaveBeenCalledWith('JRL-321');
   });
 
-  it('constructs JiraApi with the host and token from config', async () => {
+  it('constructs JiraApi with bearer token when email is not configured (Jira Server/DC)', async () => {
     mockFindIssue.mockResolvedValue(mockIssue1);
     await getJiraIssueContent('JRL-001');
     expect(MockJiraApi).toHaveBeenCalledWith(
@@ -241,6 +247,21 @@ describe('getJiraIssueContent', () => {
         host: 'jira.example.com',
         apiVersion: '2',
         bearer: 'test-token'
+      })
+    );
+  });
+
+  it('constructs JiraApi with basic auth when email is configured (Jira Cloud)', async () => {
+    vi.mocked(getJiraEmail).mockReturnValue('user@example.com');
+    mockFindIssue.mockResolvedValue(mockIssue1);
+    await getJiraIssueContent('JRL-001');
+    expect(MockJiraApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        protocol: 'https',
+        host: 'jira.example.com',
+        apiVersion: '2',
+        username: 'user@example.com',
+        password: 'test-token'
       })
     );
   });
