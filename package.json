@@ -38,10 +38,15 @@
           "default": "jira.jiralens.com",
           "description": "The Jira host."
         },
+        "jiralens.jiraEmail": {
+          "type": "string",
+          "default": "",
+          "description": "The email address for Jira Cloud authentication. Leave empty when using Jira Server or Data Center."
+        },
         "jiralens.jiraBearerToken": {
           "type": "string",
           "default": "",
-          "description": "The bearer token (personal access token) for Jira authentication."
+          "description": "The personal access token for Jira Server/Data Center, or the API token for Jira Cloud (used together with jiraEmail)."
         },
         "jiralens.jiraProjectKeys": {
           "type": "array",
@@ -98,8 +103,12 @@
         "title": "Set the Jira Host"
       },
       {
+        "command": "jiralens.setJiraEmail",
+        "title": "Set the Jira Email (Jira Cloud only)"
+      },
+      {
         "command": "jiralens.setJiraBearerToken",
-        "title": "Set the Bearer Token (Personal Access Token) for Jira Authentication"
+        "title": "Set the API Token / Personal Access Token for Jira Authentication"
       },
       {
         "command": "jiralens.addJiraProjectKey",

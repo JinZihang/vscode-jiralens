@@ -18,7 +18,9 @@ Encountering challenges or envisioning new features? Share your experiences and 
   - [Comprehensive Commands](#comprehensive-commands 'Jump to Comprehensive Commands')
 - [Extension Setup](#extension-setup 'Jump to Extension Setup')
   - [Jira Host](#jira-host 'Jump to Jira Host')
-  - [Bearer Token (Personal Access Token)](#bearer-token-personal-access-token 'Jump to Bearer Token (Personal Access Token)')
+  - [Authentication](#authentication 'Jump to Authentication')
+    - [Jira Cloud](#jira-cloud 'Jump to Jira Cloud')
+    - [Jira Server / Data Center](#jira-server--data-center 'Jump to Jira Server / Data Center')
   - [Project Keys](#project-keys 'Jump to Project Keys')
 - [Known Issues](#known-issues 'Jump to Known Issues')
 
@@ -76,7 +78,8 @@ Easily tailor the extension settings to suit your preferences with a simple and 
 // Type VS Code commands using: Ctrl/Command + Shift + P
 // Available commands:
 Set the Jira Host
-Set the Bearer Token (Personal Access Token) for Jira Authentication
+Set the Jira Email (Jira Cloud only)
+Set the API Token / Personal Access Token for Jira Authentication
 Add a Jira Project Key
 Delete a Jira Project Key
 Set Whether to Show the Committer in Inline Message
@@ -87,7 +90,7 @@ Set Whether to Show the Commit Message in Inline Message
 
 ## Extension Setup
 
-To ensure proper functionality, JiraLens requires the Jira host, the Jira authentication token, and project keys to be configured. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
+To ensure proper functionality, JiraLens requires the Jira host, authentication credentials, and project keys to be configured. Additionally, ensure Jira issue keys are included in commit messages, as they are extracted from there.
 
 You can customize the extension settings either using the VS Code settings editor or by utilizing the commands mentioned above.
 
@@ -97,9 +100,23 @@ You can customize the extension settings either using the VS Code settings edito
 
 If your Jira address begins with `https://jira.jiralens.com/...`, then set the Jira host as `jira.jiralens.com`.
 
-### Bearer Token (Personal Access Token)
+### Authentication
 
-Navigate to your Jira profile page, access the Personal Access Tokens tab, and generate a token by clicking the corresponding button.
+JiraLens supports both **Jira Cloud** and **Jira Server / Data Center**. The authentication method differs between them.
+
+#### Jira Cloud
+
+Jira Cloud uses email + API token authentication.
+
+1. Set your **Jira Email** (`jiralens.jiraEmail`) to the email address associated with your Atlassian account.
+2. Generate an API token at [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens) and set it as the **API Token** (`jiralens.jiraBearerToken`).
+
+#### Jira Server / Data Center
+
+Jira Server and Data Center use a Personal Access Token (PAT).
+
+1. Leave **Jira Email** (`jiralens.jiraEmail`) empty.
+2. Navigate to your Jira profile page, open the **Personal Access Tokens** tab, and generate a token. Set it as the **API Token / Personal Access Token** (`jiralens.jiraBearerToken`).
 
 ### Project Keys
 

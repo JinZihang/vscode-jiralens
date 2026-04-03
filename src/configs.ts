@@ -21,6 +21,25 @@ export async function setJiraHost(host: string): Promise<boolean> {
   }
 }
 
+// jiralens.jiraEmail
+export function getJiraEmail(): string {
+  return wsConfig.get<string>('jiraEmail') ?? '';
+}
+export async function setJiraEmail(email: string): Promise<boolean> {
+  try {
+    await wsConfig.update(
+      'jiraEmail',
+      email,
+      vscode.ConfigurationTarget.Global
+    );
+    syncWorkspaceConfiguration();
+    return true;
+  } catch (error) {
+    vscode.window.showErrorMessage(`Failed to update the Jira email: ${error}`);
+    return false;
+  }
+}
+
 // jiralens.jiraBearerToken
 export function getJiraBearerToken(): string {
   return wsConfig.get<string>('jiraBearerToken') ?? '';

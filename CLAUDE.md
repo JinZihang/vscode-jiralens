@@ -72,7 +72,8 @@ test/
 | Key                        | Type     | Default             | Description                               |
 | -------------------------- | -------- | ------------------- | ----------------------------------------- |
 | `jiraHost`                 | string   | `jira.jiralens.com` | Jira instance host                        |
-| `jiraBearerToken`          | string   | `""`                | Personal access token                     |
+| `jiraEmail`                | string   | `""`                | Email for Jira Cloud basic auth (leave empty for Server/DC) |
+| `jiraBearerToken`          | string   | `""`                | PAT for Jira Server/DC, or API token for Jira Cloud         |
 | `jiraProjectKeys`          | string[] | `[]`                | Project key list for issue key extraction |
 | `inlineCommitter`          | boolean  | `true`              | Show committer in inline message          |
 | `inlineRelativeCommitTime` | boolean  | `true`              | Show relative commit time                 |
