@@ -30,10 +30,10 @@
   - **Organization**: All accessible organizations
   - **Scopes**: Custom defined → **Marketplace**: Manage
 - [ ] Copy the token
+- [ ] Run `vsce login jinzihang` and paste the token when prompted
 
 ### Publish
 
-- [ ] Run `vsce login jinzihang` and paste the token when prompted
 - [ ] Double-check you are on `main` and the working tree is clean
 - [ ] Run `vsce publish` to publish the extension
 - [ ] Verify the new version appears on [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=jinzihang.jiralens)
@@ -46,5 +46,4 @@
 
 ## 6. Post-release
 
-- [ ] Verify the new version appears on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=jinzihang.jiralens)
-- [ ] Go to [GitHub Releases](https://github.com/JinZihang/vscode-jiralens/releases/new), create a new release, and set the tag (`vx.y.z`) to target the merged release commit on `main`
+- [ ] Go to [GitHub Releases](https://github.com/JinZihang/vscode-jiralens/releases/new), create a new release, set the tag (`vx.y.z`) to target the merged release commit on `main`, click **Generate release notes**, and ensure **Set as the latest release** is checked
