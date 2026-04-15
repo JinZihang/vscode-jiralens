@@ -13,6 +13,7 @@ export const window = {
   showErrorMessage: vi.fn(),
   showWarningMessage: vi.fn(),
   showInformationMessage: vi.fn(),
+  showInputBox: vi.fn(),
   showQuickPick: vi.fn()
 };
 

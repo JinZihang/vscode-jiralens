@@ -3,9 +3,11 @@ import { commands, window } from 'vscode';
 
 vi.mock('../../src/configs', () => ({
   getJiraHost: vi.fn().mockReturnValue('jira.example.com'),
+  getJiraEmail: vi.fn().mockReturnValue(''),
   getJiraBearerToken: vi.fn().mockReturnValue('token'),
   getJiraProjectKeys: vi.fn().mockReturnValue([]),
   setJiraHost: vi.fn().mockResolvedValue(true),
+  setJiraEmail: vi.fn().mockResolvedValue(true),
   setJiraBearerToken: vi.fn().mockResolvedValue(true),
   addJiraProjectKey: vi.fn().mockResolvedValue(true),
   deleteJiraProjectKey: vi.fn().mockResolvedValue(true),
@@ -26,9 +28,13 @@ vi.mock('../../src/utils', () => ({
 
 // Import after mocks are set up
 const { default: registerCommands } = await import('../../src/commands');
-const { setShowInlineJiraIssueKey, setShowInlineCommitMessage } = await import(
-  '../../src/configs'
-);
+const {
+  getJiraEmail,
+  setJiraEmail,
+  setJiraBearerToken,
+  setShowInlineJiraIssueKey,
+  setShowInlineCommitMessage
+} = await import('../../src/configs');
 
 const mockContext = { subscriptions: { push: vi.fn() } } as any;
 
@@ -42,6 +48,67 @@ vi.mocked(commands.registerCommand).mockImplementation(
 );
 
 registerCommands(mockContext);
+
+describe('registerSetJiraEmailCommand', () => {
+  beforeEach(() => {
+    vi.mocked(setJiraEmail).mockClear();
+  });
+
+  it('calls setJiraEmail with the entered email', async () => {
+    vi.mocked(window.showInputBox).mockResolvedValue('user@example.com' as any);
+    await capturedCallbacks['jiralens.setJiraEmail']();
+    expect(setJiraEmail).toHaveBeenCalledWith('user@example.com');
+  });
+
+  it('calls setJiraEmail with empty string to clear the email', async () => {
+    vi.mocked(window.showInputBox).mockResolvedValue('' as any);
+    await capturedCallbacks['jiralens.setJiraEmail']();
+    expect(setJiraEmail).toHaveBeenCalledWith('');
+  });
+
+  it('does nothing when the user dismisses the input box', async () => {
+    vi.mocked(window.showInputBox).mockResolvedValue(undefined as any);
+    await capturedCallbacks['jiralens.setJiraEmail']();
+    expect(setJiraEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe('registerSetJiraBearerTokenCommand', () => {
+  beforeEach(() => {
+    vi.mocked(setJiraBearerToken).mockClear();
+    vi.mocked(getJiraEmail).mockReturnValue('');
+  });
+
+  it('uses the Server/DC prompt when email is not configured', async () => {
+    vi.mocked(getJiraEmail).mockReturnValue('');
+    vi.mocked(window.showInputBox).mockResolvedValue('my-pat' as any);
+    await capturedCallbacks['jiralens.setJiraBearerToken']();
+    expect(window.showInputBox).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining('personal access token')
+      })
+    );
+    expect(setJiraBearerToken).toHaveBeenCalledWith('my-pat');
+  });
+
+  it('uses the Cloud prompt when email is configured', async () => {
+    vi.mocked(getJiraEmail).mockReturnValue('user@example.com');
+    vi.mocked(window.showInputBox).mockResolvedValue('my-api-token' as any);
+    await capturedCallbacks['jiralens.setJiraBearerToken']();
+    expect(window.showInputBox).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining('API token')
+      })
+    );
+    expect(setJiraBearerToken).toHaveBeenCalledWith('my-api-token');
+  });
+
+  it('does nothing when the user dismisses the input box', async () => {
+    vi.mocked(window.showInputBox).mockResolvedValue(undefined as any);
+    await capturedCallbacks['jiralens.setJiraBearerToken']();
+    expect(setJiraBearerToken).not.toHaveBeenCalled();
+  });
+});
 
 describe('registerSetShowJiraIssueKeyCommand', () => {
   beforeEach(() => {

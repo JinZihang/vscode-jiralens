@@ -4,8 +4,10 @@ import {
   addJiraProjectKey,
   deleteJiraProjectKey,
   getJiraBearerToken,
+  getJiraEmail,
   getJiraHost,
   setJiraBearerToken,
+  setJiraEmail,
   setJiraHost,
   setShowInlineCommitMessage,
   setShowInlineCommitter,
@@ -18,6 +20,7 @@ import { isValidUrl } from './utils';
 // The command IDs here must match the command field in package.json
 // Commands to modify extension configurations
 const SET_JIRA_HOST = 'jiralens.setJiraHost';
+const SET_JIRA_EMAIL = 'jiralens.setJiraEmail';
 const SET_JIRA_BEARER_TOKEN = 'jiralens.setJiraBearerToken';
 const ADD_JIRA_PROJECT_KEY = 'jiralens.addJiraProjectKey';
 const DELETE_JIRA_PROJECT_KEY = 'jiralens.deleteJiraProjectKey';
@@ -49,6 +52,26 @@ function registerSetJiraHostCommand(): vscode.Disposable {
   });
 }
 
+function registerSetJiraEmailCommand(): vscode.Disposable {
+  return vscode.commands.registerCommand(SET_JIRA_EMAIL, async () => {
+    const emailInput = await vscode.window.showInputBox({
+      prompt:
+        'Enter your Jira Cloud email address (leave empty for Jira Server/Data Center):',
+      placeHolder: 'user@example.com',
+      value: getJiraEmail()
+    });
+    if (emailInput === undefined) {
+      return;
+    }
+    await setJiraEmail(emailInput);
+    vscode.window.showInformationMessage(
+      emailInput
+        ? `Updated the Jira email to: ${emailInput}`
+        : 'Cleared the Jira email (using bearer token auth).'
+    );
+  });
+}
+
 function registerSetJiraBearerTokenCommand(): vscode.Disposable {
   return vscode.commands.registerCommand(SET_JIRA_BEARER_TOKEN, async () => {
     if (!getJiraHost()) {
@@ -56,8 +79,9 @@ function registerSetJiraBearerTokenCommand(): vscode.Disposable {
       return;
     }
     const tokenInput = await vscode.window.showInputBox({
-      prompt:
-        'Enter the bearer token (personal access token) for Jira authentication:',
+      prompt: getJiraEmail()
+        ? 'Enter the API token for Jira Cloud authentication:'
+        : 'Enter the personal access token for Jira Server/Data Center authentication:',
       placeHolder: '',
       value: getJiraBearerToken()
     });
@@ -70,7 +94,7 @@ function registerSetJiraBearerTokenCommand(): vscode.Disposable {
     }
     await setJiraBearerToken(tokenInput);
     vscode.window.showInformationMessage(
-      'Successfully updated the bearer token.'
+      'Successfully updated the authentication token.'
     );
   });
 }
@@ -170,6 +194,7 @@ export default function registerCommands(
 ): void {
   context.subscriptions.push(
     registerSetJiraHostCommand(),
+    registerSetJiraEmailCommand(),
     registerSetJiraBearerTokenCommand(),
     registerAddJiraProjectKeyCommand(),
     registerDeleteJiraProjectKeyCommand(),
