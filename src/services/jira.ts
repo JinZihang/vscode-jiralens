@@ -93,14 +93,23 @@ export async function getJiraIssueContent(
           bearer: token
         }
   );
-  const issueContent = await jira.findIssue(jiraIssueKey);
-  return issueContent;
+  try {
+    return await jira.findIssue(jiraIssueKey);
+  } catch (error) {
+    console.error(`Failed to fetch Jira issue ${jiraIssueKey}:`, error);
+    return undefined;
+  }
 }
 
 const conversionFailureMessage =
   'Encountered an error while converting this Jira markdown to HTML for display. Kindly help us resolve this issue by reporting it <a href="https://github.com/JinZihang/vscode-jiralens/issues/23">here</a>.';
 
-export function convertJiraMarkdownToHtml(markdown: string): string {
+export function convertJiraMarkdownToHtml(
+  markdown: string | null | undefined
+): string {
+  if (!markdown) {
+    return '';
+  }
   try {
     const transformer = new WikiMarkupTransformer();
     const pmNode = transformer.parse(markdown);
@@ -119,7 +128,9 @@ export function convertJiraMarkdownToHtml(markdown: string): string {
   }
 }
 
-export function convertJiraMarkdownToNormalMarkdown(markdown: string): string {
+export function convertJiraMarkdownToNormalMarkdown(
+  markdown: string | null | undefined
+): string {
   try {
     const html = convertJiraMarkdownToHtml(markdown);
     if (html === conversionFailureMessage) {

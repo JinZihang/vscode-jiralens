@@ -178,6 +178,18 @@ describe('convertJiraMarkdownToHtml', () => {
     expect(result).toContain('list item');
   });
 
+  it('returns empty string for null input', () => {
+    expect(convertJiraMarkdownToHtml(null)).toBe('');
+  });
+
+  it('returns empty string for undefined input', () => {
+    expect(convertJiraMarkdownToHtml(undefined)).toBe('');
+  });
+
+  it('returns empty string for empty string input', () => {
+    expect(convertJiraMarkdownToHtml('')).toBe('');
+  });
+
   it('returns the failure anchor link on conversion error', () => {
     // Spy on the transformer to force a throw, then verify the fallback message
     const transformer = require('@atlaskit/editor-wikimarkup-transformer');
@@ -266,15 +278,26 @@ describe('getJiraIssueContent', () => {
     );
   });
 
-  it('propagates errors thrown by findIssue', async () => {
+  it('returns undefined when findIssue throws', async () => {
     mockFindIssue.mockRejectedValue(new Error('network failure'));
-    await expect(getJiraIssueContent('JRL-001')).rejects.toThrow(
-      'network failure'
-    );
+    const result = await getJiraIssueContent('JRL-001');
+    expect(result).toBeUndefined();
   });
 });
 
 describe('convertJiraMarkdownToNormalMarkdown', () => {
+  it('returns empty string for null input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown(null)).toBe('');
+  });
+
+  it('returns empty string for undefined input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown(undefined)).toBe('');
+  });
+
+  it('returns empty string for empty string input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown('')).toBe('');
+  });
+
   it('converts bold wiki markup to **bold**', () => {
     const result = convertJiraMarkdownToNormalMarkdown('*bold text*');
     expect(result).toContain('**bold text**');
