@@ -8,16 +8,11 @@ vi.mock('../../../src/configs', () => ({
   getJiraEmail: vi.fn().mockReturnValue('')
 }));
 
-const { MockJiraApi, mockFindIssue } = vi.hoisted(() => {
-  const mockFindIssue = vi.fn();
-  const MockJiraApi = vi.fn(function () {
-    return { findIssue: mockFindIssue };
-  });
-  return { MockJiraApi, mockFindIssue };
-});
-vi.mock('jira-client', () => ({ default: MockJiraApi }));
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
 
 import {
+  getJiraBearerToken,
   getJiraEmail,
   getJiraHost,
   getJiraProjectKeys
@@ -25,7 +20,7 @@ import {
 import {
   convertJiraMarkdownToHtml,
   convertJiraMarkdownToNormalMarkdown,
-  getJiraIssueContent,
+  fetchJiraIssue,
   getJiraIssueKey,
   getJiraIssueUrl,
   getJiraProfileUrl,
@@ -178,6 +173,18 @@ describe('convertJiraMarkdownToHtml', () => {
     expect(result).toContain('list item');
   });
 
+  it('returns empty string for null input', () => {
+    expect(convertJiraMarkdownToHtml(null)).toBe('');
+  });
+
+  it('returns empty string for undefined input', () => {
+    expect(convertJiraMarkdownToHtml(undefined)).toBe('');
+  });
+
+  it('returns empty string for empty string input', () => {
+    expect(convertJiraMarkdownToHtml('')).toBe('');
+  });
+
   it('returns the failure anchor link on conversion error', () => {
     // Spy on the transformer to force a throw, then verify the fallback message
     const transformer = require('@atlaskit/editor-wikimarkup-transformer');
@@ -194,87 +201,106 @@ describe('convertJiraMarkdownToHtml', () => {
 });
 
 describe('isValidJiraBearerToken', () => {
-  it('returns true when JiraApi constructs without throwing', () => {
-    MockJiraApi.mockImplementation(function () {
-      return { findIssue: mockFindIssue };
-    });
+  it('returns true when host is configured', () => {
+    vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
     expect(isValidJiraBearerToken('valid-token')).toBe(true);
   });
 
-  it('returns true for an empty string token (no validation beyond construction)', () => {
-    MockJiraApi.mockImplementation(function () {
-      return { findIssue: mockFindIssue };
-    });
+  it('returns true for an empty string token (no format validation)', () => {
+    vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
     expect(isValidJiraBearerToken('')).toBe(true);
   });
 
-  it('returns false when JiraApi constructor throws', () => {
-    MockJiraApi.mockImplementation(function () {
-      throw new Error('invalid config');
+  it('returns false when getJiraHost throws', () => {
+    vi.mocked(getJiraHost).mockImplementation(() => {
+      throw new Error('config inaccessible');
     });
     expect(isValidJiraBearerToken('bad-token')).toBe(false);
   });
 });
 
-describe('getJiraIssueContent', () => {
+describe('fetchJiraIssue', () => {
   beforeEach(() => {
-    MockJiraApi.mockImplementation(function () {
-      return { findIssue: mockFindIssue };
-    });
     vi.mocked(getJiraEmail).mockReturnValue('');
+    vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
+    vi.mocked(getJiraBearerToken).mockReturnValue('test-token');
+    mockFetch.mockReset();
   });
 
-  it('returns the issue data resolved by findIssue', async () => {
-    mockFindIssue.mockResolvedValue(mockIssue1);
-    const result = await getJiraIssueContent('JRL-001');
+  it('returns the issue data from the fetch response', async () => {
+    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    const result = await fetchJiraIssue('JRL-001');
     expect(result).toEqual(mockIssue1);
-    expect(mockFindIssue).toHaveBeenCalledWith('JRL-001');
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://jira.example.com/rest/api/2/issue/JRL-001?expand=&fields=*all&properties=*all&fieldsByKeys=false',
+      expect.anything()
+    );
   });
 
   it('uses a different issue fixture and passes the key through', async () => {
-    mockFindIssue.mockResolvedValue(mockIssue2);
-    const result = await getJiraIssueContent('JRL-321');
+    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue2 });
+    const result = await fetchJiraIssue('JRL-321');
     expect(result).toEqual(mockIssue2);
-    expect(mockFindIssue).toHaveBeenCalledWith('JRL-321');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/issue/JRL-321'),
+      expect.anything()
+    );
   });
 
-  it('constructs JiraApi with bearer token when email is not configured (Jira Server/DC)', async () => {
-    mockFindIssue.mockResolvedValue(mockIssue1);
-    await getJiraIssueContent('JRL-001');
-    expect(MockJiraApi).toHaveBeenCalledWith(
+  it('uses Bearer auth when email is not configured (Jira Server/DC)', async () => {
+    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
       expect.objectContaining({
-        protocol: 'https',
-        host: 'jira.example.com',
-        apiVersion: '2',
-        bearer: 'test-token'
+        headers: expect.objectContaining({ Authorization: 'Bearer test-token' })
       })
     );
   });
 
-  it('constructs JiraApi with basic auth when email is configured (Jira Cloud)', async () => {
+  it('uses Basic auth when email is configured (Jira Cloud)', async () => {
     vi.mocked(getJiraEmail).mockReturnValue('user@example.com');
-    mockFindIssue.mockResolvedValue(mockIssue1);
-    await getJiraIssueContent('JRL-001');
-    expect(MockJiraApi).toHaveBeenCalledWith(
+    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    await fetchJiraIssue('JRL-001');
+    const expectedBasic = `Basic ${Buffer.from('user@example.com:test-token').toString('base64')}`;
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
       expect.objectContaining({
-        protocol: 'https',
-        host: 'jira.example.com',
-        apiVersion: '2',
-        username: 'user@example.com',
-        password: 'test-token'
+        headers: expect.objectContaining({ Authorization: expectedBasic })
       })
     );
   });
 
-  it('propagates errors thrown by findIssue', async () => {
-    mockFindIssue.mockRejectedValue(new Error('network failure'));
-    await expect(getJiraIssueContent('JRL-001')).rejects.toThrow(
-      'network failure'
-    );
+  it('returns undefined when fetch throws', async () => {
+    mockFetch.mockRejectedValue(new Error('network failure'));
+    const result = await fetchJiraIssue('JRL-001');
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when the response is not ok', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized'
+    });
+    const result = await fetchJiraIssue('JRL-001');
+    expect(result).toBeUndefined();
   });
 });
 
 describe('convertJiraMarkdownToNormalMarkdown', () => {
+  it('returns empty string for null input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown(null)).toBe('');
+  });
+
+  it('returns empty string for undefined input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown(undefined)).toBe('');
+  });
+
+  it('returns empty string for empty string input', () => {
+    expect(convertJiraMarkdownToNormalMarkdown('')).toBe('');
+  });
+
   it('converts bold wiki markup to **bold**', () => {
     const result = convertJiraMarkdownToNormalMarkdown('*bold text*');
     expect(result).toContain('**bold text**');

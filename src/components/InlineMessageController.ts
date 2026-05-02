@@ -1,4 +1,3 @@
-import JiraApi from 'jira-client';
 import * as vscode from 'vscode';
 
 import {
@@ -10,13 +9,17 @@ import {
 import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
 import {
   convertJiraMarkdownToNormalMarkdown,
-  getJiraIssueContent,
+  fetchJiraIssue,
   getJiraIssueKey,
   getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl
 } from '../services/jira';
-import { JiraUserInfo, JiraVersionInfo } from '../services/jira.types';
+import {
+  JiraIssueFields,
+  JiraUserInfo,
+  JiraVersionInfo
+} from '../services/jira.types';
 
 export default class InlineMessageController {
   private static _instance: InlineMessageController;
@@ -119,7 +122,7 @@ export default class InlineMessageController {
 
   private getHoverModalMarkdown(
     jiraIssueKey: string,
-    jiraIssueContent: JiraApi.JsonResponse
+    jiraIssueContent: JiraIssueFields
   ): vscode.MarkdownString {
     const issueUrl = getJiraIssueUrl(jiraIssueKey);
     const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -147,7 +150,8 @@ export default class InlineMessageController {
         markdown.appendMarkdown(` (${issueResolution.name})`);
       }
     }
-    const assignee: JiraUserInfo | undefined = jiraIssueContent.assignee;
+    const assignee: JiraUserInfo | undefined =
+      jiraIssueContent.assignee ?? undefined;
     if (assignee) {
       if (issueType || issueStatus) {
         markdown.appendMarkdown(`${indent}|${indent}`);
@@ -237,7 +241,7 @@ export default class InlineMessageController {
     ]);
     this.updateRenderRecord(activeEditor, lineNumber);
     // Fetch the Jira issue content
-    const jiraIssueContent = await getJiraIssueContent(jiraIssueKey);
+    const jiraIssueContent = await fetchJiraIssue(jiraIssueKey);
     if (jiraIssueContent) {
       hoverMessage = this.getHoverModalMarkdown(
         jiraIssueKey,

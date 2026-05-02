@@ -20,7 +20,7 @@
     "curly": "error",
     "eqeqeq": "error",
     "no-throw-literal": "error",
-    "no-unused-vars": "error"
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
   },
   "ignorePatterns": ["node_modules", "**/*.d.ts", "out", "dist"]
 }

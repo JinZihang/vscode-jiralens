@@ -1,4 +1,3 @@
-import JiraApi from 'jira-client';
 import * as vscode from 'vscode';
 
 import {
@@ -11,6 +10,7 @@ import {
   JiraAttachmentInfo,
   JiraCommentInfo,
   JiraComponentInfo,
+  JiraIssue,
   JiraIssueLinkInfo,
   JiraUserInfo,
   JiraVersionInfo
@@ -23,7 +23,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
   private _jiraIssueKey: string;
   private _jiraIssueUrl: string;
-  private _jiraIssueContent: JiraApi.JsonResponse | undefined;
+  private _jiraIssueContent: JiraIssue | undefined;
 
   constructor(extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri;
@@ -67,7 +67,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
 
   static getJiraIssueViewContent(
     jiraIssueUrl: string,
-    jiraIssueContent: JiraApi.JsonResponse,
+    jiraIssueContent: JiraIssue,
     extensionUri: vscode.Uri,
     webview: any,
     isWebviewView = false
@@ -124,7 +124,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   setJiraIssueView(
     jiraIssueKey: string,
     jiraIssueUrl: string,
-    jiraIssueContent: JiraApi.JsonResponse | undefined = undefined
+    jiraIssueContent: JiraIssue | undefined = undefined
   ): void {
     this._jiraIssueKey = jiraIssueKey;
     this._jiraIssueUrl = jiraIssueUrl;
@@ -168,11 +168,11 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   }
 
   static _getJiraIssueHeaderHTML(
-    jiraIssueContent: JiraApi.JsonResponse,
+    jiraIssueContent: JiraIssue,
     jiraIssueLink: string
   ): string {
     return `<div class="header">
-        <img id="project-avatar" src="${jiraIssueContent.fields.project.avatarUrls['48x48']}" />
+        <img id="project-avatar" src="${jiraIssueContent.fields.project?.avatarUrls['48x48']}" />
         <div class="header-info">
           <p>
             ${jiraIssueContent.fields.project?.name} / <a href="${jiraIssueLink}"> ${jiraIssueContent.key}</a>
@@ -182,11 +182,11 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssuePeopleHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
-    const assignee: JiraUserInfo | undefined = jiraIssueContent.fields.assignee;
-    const reporter: JiraUserInfo | undefined = jiraIssueContent.fields.reporter;
+  static _getJiraIssuePeopleHTML(jiraIssueContent: JiraIssue): string {
+    const assignee: JiraUserInfo | undefined =
+      jiraIssueContent.fields.assignee ?? undefined;
+    const reporter: JiraUserInfo | undefined =
+      jiraIssueContent.fields.reporter ?? undefined;
     const getPeopleHTML = (
       people: JiraUserInfo | undefined,
       role: 'Assignee' | 'Reporter'
@@ -220,9 +220,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueDatesHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueDatesHTML(jiraIssueContent: JiraIssue): string {
     return `<h3>Dates</h3>
       <hr>
       <div id="issue-dates">
@@ -238,9 +236,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueDetailsHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueDetailsHTML(jiraIssueContent: JiraIssue): string {
     const typeHTML = `<tr>
         <td>Type:</td>
         <td><img id="type-icon" src="${
@@ -352,9 +348,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </table>`;
   }
 
-  static _getJiraIssueDescriptionHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueDescriptionHTML(jiraIssueContent: JiraIssue): string {
     return `<h3>Description</h3>
       <hr>
       <div id="issue-description">
@@ -362,9 +356,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueAttachmentsHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueAttachmentsHTML(jiraIssueContent: JiraIssue): string {
     const attachments: JiraAttachmentInfo[] | undefined =
       jiraIssueContent.fields.attachment;
     if (!attachments || attachments.length === 0) {
@@ -379,9 +371,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueLinksHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueLinksHTML(jiraIssueContent: JiraIssue): string {
     const issueLinks: JiraIssueLinkInfo[] | undefined =
       jiraIssueContent.fields.issuelinks;
     if (!issueLinks || issueLinks.length === 0) {
@@ -446,9 +436,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </table>`;
   }
 
-  static _getJiraIssueCommentsHTML(
-    jiraIssueContent: JiraApi.JsonResponse
-  ): string {
+  static _getJiraIssueCommentsHTML(jiraIssueContent: JiraIssue): string {
     const comments: JiraCommentInfo[] | undefined =
       jiraIssueContent.fields.comment?.comments;
     if (!comments || comments.length === 0) {

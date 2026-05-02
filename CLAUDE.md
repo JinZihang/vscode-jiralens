@@ -43,7 +43,7 @@ src/
   services/
     git.ts                           # Spawns `git blame --porcelain` and parses output
     git.types.ts                     # GitBlameInfo, GitBlameCommandInfo interfaces
-    jira.ts                          # Jira REST API calls + markdown conversion helpers
+    jira.ts                          # Direct fetch to Jira REST API v2 + markdown conversion helpers
     jira.types.ts                    # Jira-related type definitions
 test/
   __mocks__/
@@ -65,6 +65,7 @@ test/
 - **Singleton controllers**: `Extension`, `StatusBarItemController`, `InlineMessageController`, and `WebviewController` all expose a `getInstance()` static method. `Extension` must be constructed first in `activate()` before other controllers can call `Extension.getInstance()`.
 - **Event-driven updates**: Three VS Code events (`onDidChangeActiveTextEditor`, `onDidChangeTextEditorSelection`, `onDidChangeTextDocument`) funnel into a single `onChange()` function in `extension.ts`. A 50 ms delay is applied on editor change to avoid a race with the active line number update.
 - **Config layer**: All reads/writes to `vscode.workspace.getConfiguration('jiralens')` go through `src/configs.ts`. Call `syncWorkspaceConfiguration()` after any write to refresh the module-level cache.
+- **Jira API call**: `fetchJiraIssue()` in `src/services/jira.ts` makes a single `GET /rest/api/2/issue/{key}` call using the Node.js global `fetch`. Auth is `Authorization: Basic base64(email:token)` for Jira Cloud and `Authorization: Bearer {token}` for Jira Server/DC. No external HTTP library is used.
 - **Jira markdown pipeline**: Jira wiki markup → ProseMirror node (via `@atlaskit/editor-wikimarkup-transformer`) → HTML (via `prosemirror-model` DOMSerializer + jsdom) → normal markdown (via turndown).
 
 ## Configuration Keys (`jiralens.*`)
@@ -101,7 +102,6 @@ test/
 
 | Package                                   | Purpose                               |
 | ----------------------------------------- | ------------------------------------- |
-| `jira-client`                             | Jira REST API v2                      |
 | `@atlaskit/adf-schema`                    | Jira ADF/wiki schema                  |
 | `@atlaskit/editor-wikimarkup-transformer` | Parse Jira wiki markup to ProseMirror |
 | `prosemirror-model`                       | Serialize ProseMirror nodes to HTML   |

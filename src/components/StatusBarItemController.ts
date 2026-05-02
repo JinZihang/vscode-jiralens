@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { STATUS_BAR_ITEM_ACTIVE } from '../commands';
-import { getJiraIssueContent, getJiraIssueUrl } from '../services/jira';
+import { fetchJiraIssue, getJiraIssueUrl } from '../services/jira';
 import Extension from './Extension';
 import WebviewViewProvider from './webview/WebviewViewProvider';
 
@@ -53,9 +53,7 @@ export default class StatusBarItemController {
         );
         panel.webview.html =
           WebviewViewProvider.getLoadingJiraIssueViewContent();
-        const jiraIssueContent = await getJiraIssueContent(
-          this._statusBarItem.text
-        );
+        const jiraIssueContent = await fetchJiraIssue(this._statusBarItem.text);
         if (jiraIssueContent) {
           panel.webview.html = WebviewViewProvider.getJiraIssueViewContent(
             jiraIssueUrl,
