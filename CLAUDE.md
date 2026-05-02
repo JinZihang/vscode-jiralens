@@ -52,6 +52,8 @@ test/
     utils.test.ts
     commands.test.ts
     configs.test.ts
+    components/
+      webview.test.ts
     services/
       git.test.ts
       jira.test.ts
@@ -63,7 +65,7 @@ test/
 ## Architecture Patterns
 
 - **Singleton controllers**: `Extension`, `StatusBarItemController`, `InlineMessageController`, and `WebviewController` all expose a `getInstance()` static method. `Extension` must be constructed first in `activate()` before other controllers can call `Extension.getInstance()`.
-- **Event-driven updates**: Three VS Code events (`onDidChangeActiveTextEditor`, `onDidChangeTextEditorSelection`, `onDidChangeTextDocument`) funnel into a single `onChange()` function in `extension.ts`. A 50 ms delay is applied on editor change to avoid a race with the active line number update.
+- **Event-driven updates**: Four VS Code events funnel into `onChange()` in `extension.ts`: `onDidChangeActiveTextEditor` (with a 50 ms delay to avoid a race with the active line number update), `onDidChangeTextEditorSelection`, `onDidChangeTextDocument`, and `onDidChangeConfiguration` (which also calls `syncWorkspaceConfiguration()` first).
 - **Config layer**: All reads/writes to `vscode.workspace.getConfiguration('jiralens')` go through `src/configs.ts`. Call `syncWorkspaceConfiguration()` after any write to refresh the module-level cache.
 - **Jira API call**: `fetchJiraIssue()` in `src/services/jira.ts` makes a single `GET /rest/api/2/issue/{key}` call using the Node.js global `fetch`. Auth is `Authorization: Basic base64(email:token)` for Jira Cloud and `Authorization: Bearer {token}` for Jira Server/DC. No external HTTP library is used.
 - **Jira markdown pipeline**: Jira wiki markup → ProseMirror node (via `@atlaskit/editor-wikimarkup-transformer`) → HTML (via `prosemirror-model` DOMSerializer + jsdom) → normal markdown (via turndown).

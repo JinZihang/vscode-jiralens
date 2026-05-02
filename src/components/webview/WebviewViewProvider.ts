@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { getMissingCoreConfigMessages } from '../../configs';
 import {
   convertJiraMarkdownToHtml,
-  getJiraIssueUrl as getJiraIssueUrl,
+  getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl
 } from '../../services/jira';
@@ -25,7 +25,6 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   private _jiraIssueKey: string;
   private _jiraIssueUrl: string;
   private _jiraIssueContent: JiraIssue | undefined;
-  private _configurationRequired: boolean = false;
 
   constructor(extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri;
@@ -148,7 +147,6 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   }
 
   setConfigurationRequiredView(missingConfigs: string[]): void {
-    this._configurationRequired = true;
     if (this._view) {
       this._view.webview.html =
         WebviewViewProvider.getConfigurationRequiredViewContent(missingConfigs);
@@ -160,7 +158,6 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     jiraIssueUrl: string,
     jiraIssueContent: JiraIssue | undefined = undefined
   ): void {
-    this._configurationRequired = false;
     this._jiraIssueKey = jiraIssueKey;
     this._jiraIssueUrl = jiraIssueUrl;
     this._jiraIssueContent = jiraIssueContent;
