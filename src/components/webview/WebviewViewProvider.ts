@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 
+import { getMissingCoreConfigMessages } from '../../configs';
 import {
   convertJiraMarkdownToHtml,
   getJiraIssueUrl as getJiraIssueUrl,
@@ -24,6 +25,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   private _jiraIssueKey: string;
   private _jiraIssueUrl: string;
   private _jiraIssueContent: JiraIssue | undefined;
+  private _configurationRequired: boolean = false;
 
   constructor(extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri;
@@ -61,6 +63,29 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
         </head>
         <body>
           <p>Loading Jira issue details...</p>
+        </body>
+      </html>`;
+  }
+
+  static getConfigurationRequiredViewContent(missingConfigs: string[]): string {
+    const missingListItems = missingConfigs
+      .map((label) => `<li>${label}</li>`)
+      .join('\n          ');
+    return `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
+          <title>Jira Issue Details</title>
+        </head>
+        <body>
+          <p><strong>JiraLens is not configured properly.</strong></p>
+          <p>The following settings are required:</p>
+          <ul>
+          ${missingListItems}
+          </ul>
+          <p>Open the Command Palette and run the commands listed above to configure JiraLens.</p>
         </body>
       </html>`;
   }
@@ -121,11 +146,20 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  setConfigurationRequiredView(missingConfigs: string[]): void {
+    this._configurationRequired = true;
+    if (this._view) {
+      this._view.webview.html =
+        WebviewViewProvider.getConfigurationRequiredViewContent(missingConfigs);
+    }
+  }
+
   setJiraIssueView(
     jiraIssueKey: string,
     jiraIssueUrl: string,
     jiraIssueContent: JiraIssue | undefined = undefined
   ): void {
+    this._configurationRequired = false;
     this._jiraIssueKey = jiraIssueKey;
     this._jiraIssueUrl = jiraIssueUrl;
     this._jiraIssueContent = jiraIssueContent;
@@ -152,6 +186,14 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'media')]
     };
+    const missingConfigMessages = getMissingCoreConfigMessages();
+    if (missingConfigMessages.length > 0) {
+      webviewView.webview.html =
+        WebviewViewProvider.getConfigurationRequiredViewContent(
+          missingConfigMessages
+        );
+      return;
+    }
     let viewContent: string;
     if (this._jiraIssueContent) {
       viewContent = WebviewViewProvider.getJiraIssueViewContent(

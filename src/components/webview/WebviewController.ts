@@ -51,4 +51,8 @@ export default class WebviewController {
       jiraIssueContent
     );
   }
+
+  renderConfigurationRequiredWebview(missingConfigs: string[]): void {
+    this._webviewProvider.setConfigurationRequiredView(missingConfigs);
+  }
 }

@@ -191,3 +191,19 @@ export async function setShowInlineCommitMessage(
     return false;
   }
 }
+
+export function getMissingCoreConfigMessages(): string[] {
+  const messages: string[] = [];
+  if (!getJiraHost()) {
+    messages.push('Jira Host (jiralens: Set the Jira Host)');
+  }
+  if (!getJiraBearerToken()) {
+    messages.push(
+      'API / Personal Access Token (jiralens: Set the API Token / Personal Access Token for Jira Authentication)'
+    );
+  }
+  if (getJiraProjectKeys().length === 0) {
+    messages.push('Jira Project Keys (jiralens: Add a Jira Project Key)');
+  }
+  return messages;
+}

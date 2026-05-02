@@ -4,6 +4,7 @@ import { workspace } from 'vscode';
 import {
   getJiraEmail,
   getJiraProjectKeys,
+  getMissingCoreConfigMessages,
   getShowInlineCommitMessage,
   getShowInlineCommitter,
   getShowInlineJiraIssueKey,
@@ -87,5 +88,88 @@ describe('getShowInlineCommitMessage', () => {
   it('returns false when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
     expect(getShowInlineCommitMessage()).toBe(false);
+  });
+});
+
+describe('getMissingCoreConfigMessages', () => {
+  it('returns empty array when all core configs are set', () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'jiraHost') {
+        return 'jira.example.com';
+      }
+      if (key === 'jiraBearerToken') {
+        return 'mytoken';
+      }
+      if (key === 'jiraProjectKeys') {
+        return ['PROJ'];
+      }
+    });
+    expect(getMissingCoreConfigMessages()).toEqual([]);
+  });
+
+  it('reports missing jiraHost', () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'jiraHost') {
+        return '';
+      }
+      if (key === 'jiraBearerToken') {
+        return 'mytoken';
+      }
+      if (key === 'jiraProjectKeys') {
+        return ['PROJ'];
+      }
+    });
+    const result = getMissingCoreConfigMessages();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toContain('Jira Host');
+  });
+
+  it('reports missing jiraBearerToken', () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'jiraHost') {
+        return 'jira.example.com';
+      }
+      if (key === 'jiraBearerToken') {
+        return '';
+      }
+      if (key === 'jiraProjectKeys') {
+        return ['PROJ'];
+      }
+    });
+    const result = getMissingCoreConfigMessages();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toContain('API / Personal Access Token');
+  });
+
+  it('reports missing jiraProjectKeys when the array is empty', () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'jiraHost') {
+        return 'jira.example.com';
+      }
+      if (key === 'jiraBearerToken') {
+        return 'mytoken';
+      }
+      if (key === 'jiraProjectKeys') {
+        return [];
+      }
+    });
+    const result = getMissingCoreConfigMessages();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toContain('Jira Project Keys');
+  });
+
+  it('reports all three when all core configs are missing', () => {
+    mockGet.mockImplementation((key: string) => {
+      if (key === 'jiraHost') {
+        return '';
+      }
+      if (key === 'jiraBearerToken') {
+        return '';
+      }
+      if (key === 'jiraProjectKeys') {
+        return [];
+      }
+    });
+    expect(getMissingCoreConfigMessages()).toHaveLength(3);
   });
 });

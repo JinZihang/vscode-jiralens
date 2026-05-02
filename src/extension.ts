@@ -5,7 +5,10 @@ import Extension from './components/Extension';
 import InlineMessageController from './components/InlineMessageController';
 import StatusBarItemController from './components/StatusBarItemController';
 import WebviewController from './components/webview/WebviewController';
-import { syncWorkspaceConfiguration } from './configs';
+import {
+  getMissingCoreConfigMessages,
+  syncWorkspaceConfiguration
+} from './configs';
 import { runGitBlameCommand } from './services/git';
 import { getJiraIssueKey } from './services/jira';
 import { delay } from './utils';
@@ -18,7 +21,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
 function bindEventListeners(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration(syncWorkspaceConfiguration),
+    vscode.workspace.onDidChangeConfiguration(() => {
+      syncWorkspaceConfiguration();
+      onChange();
+    }),
     /**
      * onDidChangeActiveTextEditor    - change of editor
      * onDidChangeTextEditorSelection - change of selection
@@ -46,6 +52,15 @@ function onChange(): void {
   const statusBarItemController = StatusBarItemController.getInstance();
   const inlineMessageController = InlineMessageController.getInstance();
   const webviewController = WebviewController.getInstance();
+
+  const missingConfigs = getMissingCoreConfigMessages();
+  if (missingConfigs.length > 0) {
+    statusBarItemController.hideStatusBarItem();
+    inlineMessageController.hideInlineMessage();
+    webviewController.renderConfigurationRequiredWebview(missingConfigs);
+    return;
+  }
+
   runGitBlameCommand()
     .then(async (gitBlameCommandInfo) => {
       if (!gitBlameCommandInfo) {
