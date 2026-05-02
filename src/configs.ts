@@ -6,19 +6,27 @@ export function syncWorkspaceConfiguration(): void {
   wsConfig = vscode.workspace.getConfiguration('jiralens');
 }
 
+async function setConfig<T>(
+  key: string,
+  value: T,
+  errorLabel: string
+): Promise<boolean> {
+  try {
+    await wsConfig.update(key, value, vscode.ConfigurationTarget.Global);
+    syncWorkspaceConfiguration();
+    return true;
+  } catch (error) {
+    vscode.window.showErrorMessage(`Failed to update ${errorLabel}: ${error}`);
+    return false;
+  }
+}
+
 // jiralens.jiraHost
 export function getJiraHost(): string {
   return wsConfig.get<string>('jiraHost') || '';
 }
 export async function setJiraHost(host: string): Promise<boolean> {
-  try {
-    await wsConfig.update('jiraHost', host, vscode.ConfigurationTarget.Global);
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(`Failed to update the Jira host: ${error}`);
-    return false;
-  }
+  return setConfig('jiraHost', host, 'the Jira host');
 }
 
 // jiralens.jiraEmail
@@ -26,18 +34,7 @@ export function getJiraEmail(): string {
   return wsConfig.get<string>('jiraEmail') ?? '';
 }
 export async function setJiraEmail(email: string): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'jiraEmail',
-      email,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(`Failed to update the Jira email: ${error}`);
-    return false;
-  }
+  return setConfig('jiraEmail', email, 'the Jira email');
 }
 
 // jiralens.jiraBearerToken
@@ -45,40 +42,15 @@ export function getJiraBearerToken(): string {
   return wsConfig.get<string>('jiraBearerToken') ?? '';
 }
 export async function setJiraBearerToken(token: string): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'jiraBearerToken',
-      token,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(
-      `Failed to update the Jira bearer token: ${error}`
-    );
-    return false;
-  }
+  return setConfig('jiraBearerToken', token, 'the Jira bearer token');
 }
 
 // jiralens.jiraProjectKeys
 export function getJiraProjectKeys(): string[] {
-  const keys = wsConfig.get<string[]>('jiraProjectKeys') ?? [];
-  return keys;
+  return wsConfig.get<string[]>('jiraProjectKeys') ?? [];
 }
 async function setJiraProjectKeys(keys: string[]): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'jiraProjectKeys',
-      keys,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(`Failed to update project keys: ${error}`);
-    return false;
-  }
+  return setConfig('jiraProjectKeys', keys, 'project keys');
 }
 export async function addJiraProjectKey(key: string): Promise<boolean> {
   const keys = getJiraProjectKeys();
@@ -87,7 +59,7 @@ export async function addJiraProjectKey(key: string): Promise<boolean> {
     return false;
   }
   keys.push(key);
-  return await setJiraProjectKeys(keys);
+  return setJiraProjectKeys(keys);
 }
 export async function deleteJiraProjectKey(key: string): Promise<boolean> {
   const keys = getJiraProjectKeys();
@@ -99,7 +71,7 @@ export async function deleteJiraProjectKey(key: string): Promise<boolean> {
   }
   const index = keys.indexOf(key);
   keys.splice(index, 1);
-  return await setJiraProjectKeys(keys);
+  return setJiraProjectKeys(keys);
 }
 
 // jiralens.inlineCommitter
@@ -107,20 +79,11 @@ export function getShowInlineCommitter(): boolean {
   return wsConfig.get<boolean>('inlineCommitter') ?? true;
 }
 export async function setShowInlineCommitter(show: boolean): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'inlineCommitter',
-      show,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(
-      `Failed to update the display setting for inline committer: ${error}`
-    );
-    return false;
-  }
+  return setConfig(
+    'inlineCommitter',
+    show,
+    'the display setting for inline committer'
+  );
 }
 
 // jiralens.inlineRelativeCommitTime
@@ -130,20 +93,11 @@ export function getShowInlineRelativeCommitTime(): boolean {
 export async function setShowInlineRelativeCommitTime(
   show: boolean
 ): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'inlineRelativeCommitTime',
-      show,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(
-      `Failed to update the display setting for inline relative commit time: ${error}`
-    );
-    return false;
-  }
+  return setConfig(
+    'inlineRelativeCommitTime',
+    show,
+    'the display setting for inline relative commit time'
+  );
 }
 
 // jiralens.inlineJiraIssueKey
@@ -153,20 +107,11 @@ export function getShowInlineJiraIssueKey(): boolean {
 export async function setShowInlineJiraIssueKey(
   show: boolean
 ): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'inlineJiraIssueKey',
-      show,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(
-      `Failed to update the display setting for inline Jira issue key: ${error}`
-    );
-    return false;
-  }
+  return setConfig(
+    'inlineJiraIssueKey',
+    show,
+    'the display setting for inline Jira issue key'
+  );
 }
 
 // jiralens.inlineCommitMessage
@@ -176,20 +121,11 @@ export function getShowInlineCommitMessage(): boolean {
 export async function setShowInlineCommitMessage(
   show: boolean
 ): Promise<boolean> {
-  try {
-    await wsConfig.update(
-      'inlineCommitMessage',
-      show,
-      vscode.ConfigurationTarget.Global
-    );
-    syncWorkspaceConfiguration();
-    return true;
-  } catch (error) {
-    vscode.window.showErrorMessage(
-      `Failed to update the display setting for inline commit message: ${error}`
-    );
-    return false;
-  }
+  return setConfig(
+    'inlineCommitMessage',
+    show,
+    'the display setting for inline commit message'
+  );
 }
 
 export function getMissingCoreConfigMessages(): string[] {

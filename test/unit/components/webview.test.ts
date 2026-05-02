@@ -12,7 +12,10 @@ vi.mock('../../../src/services/jira', () => ({
       (key: string) => `https://jira.example.com/browse/${key}`
     ),
   getJiraProfileUrl: vi.fn().mockReturnValue(''),
-  getJiraQueryUrl: vi.fn().mockReturnValue(''),
+  getJiraQueryUrl: vi.fn().mockReturnValue('')
+}));
+
+vi.mock('../../../src/services/jiraMarkdown', () => ({
   convertJiraMarkdownToHtml: vi.fn().mockReturnValue('')
 }));
 

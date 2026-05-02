@@ -7,19 +7,9 @@ import {
   getShowInlineRelativeCommitTime
 } from '../configs';
 import { GitBlameCommandInfo, GitBlameInfo } from '../services/git.types';
-import {
-  convertJiraMarkdownToNormalMarkdown,
-  fetchJiraIssue,
-  getJiraIssueKey,
-  getJiraIssueUrl,
-  getJiraProfileUrl,
-  getJiraQueryUrl
-} from '../services/jira';
-import {
-  JiraIssueFields,
-  JiraUserInfo,
-  JiraVersionInfo
-} from '../services/jira.types';
+import { fetchJiraIssue, getJiraIssueKey } from '../services/jira';
+import { getRelativeTimePassed, truncateMessage } from '../utils';
+import { getHoverModalMarkdown } from './inlineHoverMarkdown';
 
 export default class InlineMessageController {
   private static _instance: InlineMessageController;
@@ -44,53 +34,6 @@ export default class InlineMessageController {
     return InlineMessageController._instance;
   }
 
-  private getRelativeTimePassed(curr: number, prev: number): string {
-    const minuteMs = 60 * 1000;
-    const hourMs = minuteMs * 60;
-    const dayMs = hourMs * 24;
-    const monthMs = dayMs * 30;
-    const yearMs = dayMs * 365;
-    const elapsedTime = curr - prev;
-    let elapsedTimeValue = 0;
-    let timeUnit = '';
-    if (elapsedTime < minuteMs) {
-      elapsedTimeValue = Math.round(elapsedTime / 1000);
-      timeUnit = 'second';
-    } else if (elapsedTime < hourMs) {
-      elapsedTimeValue = Math.round(elapsedTime / minuteMs);
-      timeUnit = 'minute';
-    } else if (elapsedTime < dayMs) {
-      elapsedTimeValue = Math.round(elapsedTime / hourMs);
-      timeUnit = 'hour';
-    } else if (elapsedTime < monthMs) {
-      elapsedTimeValue = Math.round(elapsedTime / dayMs);
-      timeUnit = 'day';
-    } else if (elapsedTime < yearMs) {
-      elapsedTimeValue = Math.round(elapsedTime / monthMs);
-      timeUnit = 'month';
-    } else {
-      elapsedTimeValue = Math.round(elapsedTime / yearMs);
-      timeUnit = 'year';
-    }
-    const plural = elapsedTimeValue > 1 ? 's' : '';
-    return `${elapsedTimeValue} ${timeUnit}${plural} ago`;
-  }
-
-  private truncateMessage(message: string): string {
-    const lengthLimit = 30;
-    if (message.length < lengthLimit) {
-      return message;
-    }
-    const words = message.split(' ');
-    let truncatedMessage = '';
-    let wordIndex = 0;
-    while (truncatedMessage.length + words[wordIndex].length < lengthLimit) {
-      truncatedMessage += `${words[wordIndex]} `;
-      wordIndex++;
-    }
-    return `${truncatedMessage.trim()}...`;
-  }
-
   private getInlineMessage(gitBlameInfo: GitBlameInfo): string {
     if (gitBlameInfo.author === 'Not Committed Yet') {
       return 'Not committed yet';
@@ -100,7 +43,7 @@ export default class InlineMessageController {
       messages.push(gitBlameInfo.author);
     }
     if (getShowInlineRelativeCommitTime()) {
-      const relativeTimePassed = this.getRelativeTimePassed(
+      const relativeTimePassed = getRelativeTimePassed(
         Date.now(),
         parseInt(gitBlameInfo['committer-time']) * 1000
       );
@@ -113,69 +56,11 @@ export default class InlineMessageController {
         messages.push(jiraIssueKey);
       }
     }
-    const truncatedCommitMessage = this.truncateMessage(commitMessage);
+    const truncatedCommitMessage = truncateMessage(commitMessage);
     if (getShowInlineCommitMessage()) {
       messages.push(truncatedCommitMessage);
     }
     return messages.length ? messages.join(' • ') : '';
-  }
-
-  private getHoverModalMarkdown(
-    jiraIssueKey: string,
-    jiraIssueContent: JiraIssueFields
-  ): vscode.MarkdownString {
-    const issueUrl = getJiraIssueUrl(jiraIssueKey);
-    const indent = '&nbsp;&nbsp;&nbsp;&nbsp;';
-    const markdown = new vscode.MarkdownString(
-      `## [${jiraIssueKey}: ${jiraIssueContent.summary}](${issueUrl})
-      \n`
-    );
-    markdown.appendMarkdown(
-      `${convertJiraMarkdownToNormalMarkdown(jiraIssueContent.description)}
-      \n`
-    );
-    markdown.appendMarkdown(`---\n`);
-    const issueType = jiraIssueContent.issuetype;
-    if (issueType) {
-      markdown.appendMarkdown(`Type: ${issueType.name}`);
-    }
-    const issueStatus = jiraIssueContent.status;
-    const issueResolution = jiraIssueContent.resolution;
-    if (issueStatus) {
-      if (issueType) {
-        markdown.appendMarkdown(`${indent}|${indent}`);
-      }
-      markdown.appendMarkdown(`Status: ${issueStatus.name}`);
-      if (issueResolution) {
-        markdown.appendMarkdown(` (${issueResolution.name})`);
-      }
-    }
-    const assignee: JiraUserInfo | undefined =
-      jiraIssueContent.assignee ?? undefined;
-    if (assignee) {
-      if (issueType || issueStatus) {
-        markdown.appendMarkdown(`${indent}|${indent}`);
-      }
-      markdown.appendMarkdown(
-        `Assignee: [${
-          assignee.displayName
-        }](${getJiraProfileUrl(assignee.name)})`
-      );
-    }
-    const fixVersions = jiraIssueContent.fixVersions;
-    if (fixVersions && fixVersions.length > 0) {
-      if (issueType || issueStatus || assignee) {
-        markdown.appendMarkdown(`${indent}|${indent}`);
-      }
-      const fixVersionsMarkdown = fixVersions
-        .map(
-          (version: JiraVersionInfo) =>
-            `[${version.name}](${getJiraQueryUrl('fixVersion', version.name)})`
-        )
-        .join(', ');
-      markdown.appendMarkdown(`Fix Versions: ${fixVersionsMarkdown}`);
-    }
-    return markdown;
   }
 
   private hasTargetLineChanged(fileName: string, lineNumber: number): boolean {
@@ -243,7 +128,7 @@ export default class InlineMessageController {
     // Fetch the Jira issue content
     const jiraIssueContent = await fetchJiraIssue(jiraIssueKey);
     if (jiraIssueContent) {
-      hoverMessage = this.getHoverModalMarkdown(
+      hoverMessage = getHoverModalMarkdown(
         jiraIssueKey,
         jiraIssueContent.fields
       );
