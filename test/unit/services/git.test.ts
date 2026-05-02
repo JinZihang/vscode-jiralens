@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import { runGitBlameCommand } from '../../../src/services/git';
 
 // A realistic git blame --porcelain output for a single line
-const MOCK_BLAME_OUTPUT = `abc123def456abc123def456abc123def456abc1 1 1 1
+const MOCK_BLAME_PORCELAIN_OUTPUT = `abc123def456abc123def456abc123def456abc1 1 1 1
 author John Doe
 author-mail <john@example.com>
 author-time 1696000000
@@ -24,13 +24,13 @@ summary feat: JRL-123 add the status bar item
 filename src/extension.ts
 \tconst x = 1`;
 
-function makeMockProcess() {
+function createMockChildProcess() {
   const stdout = new EventEmitter();
   const stderr = new EventEmitter();
   return { stdout, stderr };
 }
 
-function makeMockEditor(fsPath: string, line: number) {
+function createMockTextEditor(fsPath: string, line: number) {
   return {
     document: { uri: { fsPath } },
     selection: { active: { line } }
@@ -56,7 +56,7 @@ describe('runGitBlameCommand', () => {
 
   it('returns undefined when the file is not inside a workspace folder', async () => {
     (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
-      makeMockEditor('/outside/file.ts', 0);
+      createMockTextEditor('/outside/file.ts', 0);
     vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue(undefined);
 
     const result = await runGitBlameCommand();
@@ -64,20 +64,20 @@ describe('runGitBlameCommand', () => {
   });
 
   it('spawns git blame with the correct arguments', async () => {
-    const mockProcess = makeMockProcess();
+    const mockProcess = createMockChildProcess();
     vi.mocked(cp.spawn).mockReturnValue(
       mockProcess as ReturnType<typeof cp.spawn>
     );
     (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
-      makeMockEditor('/workspace/src/extension.ts', 4);
+      createMockTextEditor('/workspace/src/extension.ts', 4);
     vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue({
       uri: { fsPath: '/workspace' }
     } as ReturnType<typeof vscode.workspace.getWorkspaceFolder>);
 
-    const promise = runGitBlameCommand();
+    const blamePromise = runGitBlameCommand();
     await Promise.resolve(); // allow listener registration
-    mockProcess.stdout.emit('data', Buffer.from(MOCK_BLAME_OUTPUT));
-    await promise;
+    mockProcess.stdout.emit('data', Buffer.from(MOCK_BLAME_PORCELAIN_OUTPUT));
+    await blamePromise;
 
     expect(cp.spawn).toHaveBeenCalledWith(
       'git',
@@ -87,20 +87,20 @@ describe('runGitBlameCommand', () => {
   });
 
   it('parses the blame output into a GitBlameCommandInfo object', async () => {
-    const mockProcess = makeMockProcess();
+    const mockProcess = createMockChildProcess();
     vi.mocked(cp.spawn).mockReturnValue(
       mockProcess as ReturnType<typeof cp.spawn>
     );
     (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
-      makeMockEditor('/workspace/src/extension.ts', 5);
+      createMockTextEditor('/workspace/src/extension.ts', 5);
     vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue({
       uri: { fsPath: '/workspace' }
     } as ReturnType<typeof vscode.workspace.getWorkspaceFolder>);
 
-    const promise = runGitBlameCommand();
+    const blamePromise = runGitBlameCommand();
     await Promise.resolve();
-    mockProcess.stdout.emit('data', Buffer.from(MOCK_BLAME_OUTPUT));
-    const result = await promise;
+    mockProcess.stdout.emit('data', Buffer.from(MOCK_BLAME_PORCELAIN_OUTPUT));
+    const result = await blamePromise;
 
     expect(result).toBeDefined();
     expect(result!.lineNumber).toBe(5);
@@ -114,20 +114,20 @@ describe('runGitBlameCommand', () => {
   });
 
   it('rejects when git emits a stderr error', async () => {
-    const mockProcess = makeMockProcess();
+    const mockProcess = createMockChildProcess();
     vi.mocked(cp.spawn).mockReturnValue(
       mockProcess as ReturnType<typeof cp.spawn>
     );
     (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
-      makeMockEditor('/workspace/src/extension.ts', 0);
+      createMockTextEditor('/workspace/src/extension.ts', 0);
     vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue({
       uri: { fsPath: '/workspace' }
     } as ReturnType<typeof vscode.workspace.getWorkspaceFolder>);
 
-    const promise = runGitBlameCommand();
+    const blamePromise = runGitBlameCommand();
     await Promise.resolve();
     mockProcess.stderr.emit('error', new Error('git not found'));
 
-    await expect(promise).rejects.toThrow('git not found');
+    await expect(blamePromise).rejects.toThrow('git not found');
   });
 });

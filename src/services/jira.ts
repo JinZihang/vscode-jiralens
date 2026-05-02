@@ -43,15 +43,6 @@ export function getJiraQueryUrl(key: string, value: string): string {
   return `https://${getJiraHost()}/issues/?jql=${encodeURIComponent(`${key}="${value}"`)}`;
 }
 
-export function isValidJiraBearerToken(_token: string): boolean {
-  try {
-    getJiraHost();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export async function fetchJiraIssue(
   jiraIssueKey: string
 ): Promise<JiraIssue | undefined> {

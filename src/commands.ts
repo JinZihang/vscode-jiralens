@@ -14,7 +14,7 @@ import {
   setShowInlineJiraIssueKey,
   setShowInlineRelativeCommitTime
 } from './configs';
-import { isValidJiraBearerToken, isValidJiraProjectKey } from './services/jira';
+import { isValidJiraProjectKey } from './services/jira';
 import { isValidUrl } from './utils';
 
 // The command IDs here must match the command field in package.json
@@ -86,10 +86,6 @@ function registerSetJiraBearerTokenCommand(): vscode.Disposable {
       value: getJiraBearerToken()
     });
     if (!tokenInput) {
-      return;
-    }
-    if (!isValidJiraBearerToken(tokenInput)) {
-      vscode.window.showErrorMessage('Invalid token input.');
       return;
     }
     await setJiraBearerToken(tokenInput);
