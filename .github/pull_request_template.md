@@ -14,4 +14,4 @@
 
 - [ ] No commit includes credentials or sensitive information
 - [ ] Changes have been tested locally
-- [ ] Relevant documentations have been updated, or documentation updates are not applicable for this change
+- [ ] Relevant documentation has been updated, or documentation updates are not applicable for this change
