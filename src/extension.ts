@@ -49,6 +49,11 @@ function bindEventListeners(context: vscode.ExtensionContext): void {
 }
 
 function onChange(): void {
+  const activeEditor = vscode.window.activeTextEditor;
+  if (!activeEditor) {
+    return;
+  }
+
   const statusBarItemController = StatusBarItemController.getInstance();
   const inlineMessageController = InlineMessageController.getInstance();
   const webviewController = WebviewController.getInstance();
