@@ -134,6 +134,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
   }
 
   setNoJiraIssueView(): void {
+    this._jiraIssueKey = '';
     if (this._view) {
       this._view.webview.html = WebviewViewProvider.getNoJiraIssueViewContent();
     }
