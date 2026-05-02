@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 
-import { STATUS_BAR_ITEM_ACTIVE } from '../commands';
-import { fetchJiraIssue, getJiraIssueUrl } from '../services/jira';
+import { getJiraIssueUrl } from '../services/jira';
 import Extension from './Extension';
-import WebviewViewProvider from './webview/WebviewViewProvider';
+import WebviewController from './webview/WebviewController';
+
+const STATUS_BAR_ITEM_ACTIVE = 'jiralens.statusBarItemActive';
+export { STATUS_BAR_ITEM_ACTIVE };
 
 export default class StatusBarItemController {
   private static _instance: StatusBarItemController;
@@ -27,13 +29,11 @@ export default class StatusBarItemController {
   registerStatusBarItemActiveCommand(): vscode.Disposable {
     return vscode.commands.registerCommand(STATUS_BAR_ITEM_ACTIVE, async () => {
       if (!this._statusBarItem.text) {
-        // This situation might happen when users manually trigger this command
         vscode.window.showErrorMessage(
           'No Jira issue found for the active line.'
         );
         return;
       }
-      const extensionContext = Extension.getInstance().getContext();
       const jiraIssueKey = this._statusBarItem.text;
       const jiraIssueUrl = getJiraIssueUrl(jiraIssueKey);
       const selection = await vscode.window.showInformationMessage(
@@ -42,30 +42,7 @@ export default class StatusBarItemController {
         'Browser'
       );
       if (selection === 'Tab') {
-        const panel = vscode.window.createWebviewPanel(
-          'jira-issue',
-          jiraIssueKey,
-          vscode.ViewColumn.One,
-          {
-            enableScripts: true,
-            localResourceRoots: [
-              vscode.Uri.joinPath(extensionContext.extensionUri, 'media')
-            ]
-          }
-        );
-        panel.webview.html =
-          WebviewViewProvider.getLoadingJiraIssueViewContent();
-        const jiraIssueContent = await fetchJiraIssue(this._statusBarItem.text);
-        if (jiraIssueContent) {
-          panel.webview.html = WebviewViewProvider.getJiraIssueViewContent(
-            jiraIssueUrl,
-            jiraIssueContent,
-            extensionContext.extensionUri,
-            panel.webview
-          );
-        } else {
-          panel.webview.html = WebviewViewProvider.getNoJiraIssueViewContent();
-        }
+        await WebviewController.getInstance().openInTab(jiraIssueKey);
       } else if (selection === 'Browser') {
         vscode.env.openExternal(vscode.Uri.parse(jiraIssueUrl));
       }

@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 
 import { fetchJiraIssue, getJiraIssueUrl } from '../../services/jira';
 import Extension from '../Extension';
+import {
+  getJiraIssueViewContent,
+  getLoadingJiraIssueViewContent,
+  getNoJiraIssueViewContent
+} from './jiraIssueHtml';
 import WebviewViewProvider from './WebviewViewProvider';
 
 export default class WebviewController {
@@ -54,5 +59,33 @@ export default class WebviewController {
 
   renderConfigurationRequiredWebview(missingConfigs: string[]): void {
     this._webviewProvider.setConfigurationRequiredView(missingConfigs);
+  }
+
+  async openInTab(jiraIssueKey: string): Promise<void> {
+    const extensionContext = Extension.getInstance().getContext();
+    const jiraIssueUrl = getJiraIssueUrl(jiraIssueKey);
+    const panel = vscode.window.createWebviewPanel(
+      'jira-issue',
+      jiraIssueKey,
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.joinPath(extensionContext.extensionUri, 'media')
+        ]
+      }
+    );
+    panel.webview.html = getLoadingJiraIssueViewContent();
+    const jiraIssueContent = await fetchJiraIssue(jiraIssueKey);
+    if (jiraIssueContent) {
+      panel.webview.html = getJiraIssueViewContent(
+        jiraIssueUrl,
+        jiraIssueContent,
+        extensionContext.extensionUri,
+        panel.webview
+      );
+    } else {
+      panel.webview.html = getNoJiraIssueViewContent();
+    }
   }
 }
