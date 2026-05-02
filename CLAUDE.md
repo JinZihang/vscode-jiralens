@@ -32,18 +32,21 @@ src/
   extension.ts                       # Entry point: activate(), event listener wiring
   commands.ts                        # All VS Code command registrations
   configs.ts                         # Read/write workspace configuration (jiralens.*)
-  utils.ts                           # Shared utilities (isValidUrl, delay, …)
+  utils.ts                           # Shared utilities (isValidUrl, delay, getRelativeTimePassed, truncateMessage, …)
   components/
     Extension.ts                     # Singleton wrapper around ExtensionContext
     StatusBarItemController.ts       # Status bar item lifecycle
     InlineMessageController.ts       # Editor inline decoration lifecycle
+    inlineHoverMarkdown.ts           # Builds the hover MarkdownString from Jira issue fields
     webview/
-      WebviewController.ts           # Singleton managing the webview view
-      WebviewViewProvider.ts         # WebviewViewProvider implementation
+      WebviewController.ts           # Singleton managing the webview view (sidebar + tab)
+      WebviewViewProvider.ts         # WebviewViewProvider lifecycle / state management
+      jiraIssueHtml.ts               # Pure HTML builders for the Jira issue webview
   services/
     git.ts                           # Spawns `git blame --porcelain` and parses output
     git.types.ts                     # GitBlameInfo, GitBlameCommandInfo interfaces
-    jira.ts                          # Direct fetch to Jira REST API v2 + markdown conversion helpers
+    jira.ts                          # Jira REST API v2 fetch, URL helpers, issue key extraction
+    jiraMarkdown.ts                  # Jira wiki markup → HTML → normal markdown pipeline
     jira.types.ts                    # Jira-related type definitions
 test/
   __mocks__/
@@ -68,7 +71,7 @@ test/
 - **Event-driven updates**: Four VS Code events funnel into `onChange()` in `extension.ts`: `onDidChangeActiveTextEditor` (with a 50 ms delay to avoid a race with the active line number update), `onDidChangeTextEditorSelection`, `onDidChangeTextDocument`, and `onDidChangeConfiguration` (which also calls `syncWorkspaceConfiguration()` first).
 - **Config layer**: All reads/writes to `vscode.workspace.getConfiguration('jiralens')` go through `src/configs.ts`. Call `syncWorkspaceConfiguration()` after any write to refresh the module-level cache.
 - **Jira API call**: `fetchJiraIssue()` in `src/services/jira.ts` makes a single `GET /rest/api/2/issue/{key}` call using the Node.js global `fetch`. Auth is `Authorization: Basic base64(email:token)` for Jira Cloud and `Authorization: Bearer {token}` for Jira Server/DC. No external HTTP library is used.
-- **Jira markdown pipeline**: Jira wiki markup → ProseMirror node (via `@atlaskit/editor-wikimarkup-transformer`) → HTML (via `prosemirror-model` DOMSerializer + jsdom) → normal markdown (via turndown).
+- **Jira markdown pipeline**: Lives in `src/services/jiraMarkdown.ts`. Jira wiki markup → ProseMirror node (via `@atlaskit/editor-wikimarkup-transformer`) → HTML (via `prosemirror-model` DOMSerializer + jsdom) → normal markdown (via turndown). Re-exported from `jira.ts` for convenience.
 
 ## Configuration Keys (`jiralens.*`)
 
