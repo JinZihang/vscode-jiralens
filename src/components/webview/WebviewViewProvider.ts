@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 
+import { getMissingCoreConfigMessages } from '../../configs';
 import {
   convertJiraMarkdownToHtml,
-  getJiraIssueUrl as getJiraIssueUrl,
+  getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl
 } from '../../services/jira';
@@ -65,6 +66,29 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </html>`;
   }
 
+  static getConfigurationRequiredViewContent(missingConfigs: string[]): string {
+    const missingListItems = missingConfigs
+      .map((label) => `<li>${label}</li>`)
+      .join('\n          ');
+    return `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
+          <title>Jira Issue Details</title>
+        </head>
+        <body>
+          <p><strong>JiraLens is not configured properly.</strong></p>
+          <p>The following settings are required:</p>
+          <ul>
+          ${missingListItems}
+          </ul>
+          <p>Open the Command Palette and run the commands listed above to configure JiraLens.</p>
+        </body>
+      </html>`;
+  }
+
   static getJiraIssueViewContent(
     jiraIssueUrl: string,
     jiraIssueContent: JiraIssue,
@@ -96,19 +120,20 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           <title>Jira Issue Details</title>
         </head>
         <body>
-          ${this._getJiraIssueHeaderHTML(jiraIssueContent, jiraIssueUrl)}
-          ${this._getJiraIssuePeopleHTML(jiraIssueContent)}
-          ${this._getJiraIssueDatesHTML(jiraIssueContent)}
-          ${this._getJiraIssueDetailsHTML(jiraIssueContent)}
-          ${this._getJiraIssueDescriptionHTML(jiraIssueContent)}
-          ${this._getJiraIssueAttachmentsHTML(jiraIssueContent)}
-          ${this._getJiraIssueLinksHTML(jiraIssueContent)}
-          ${this._getJiraIssueCommentsHTML(jiraIssueContent)}
+          ${this.getJiraIssueHeaderHTML(jiraIssueContent, jiraIssueUrl)}
+          ${this.getJiraIssuePeopleHTML(jiraIssueContent)}
+          ${this.getJiraIssueDatesHTML(jiraIssueContent)}
+          ${this.getJiraIssueDetailsHTML(jiraIssueContent)}
+          ${this.getJiraIssueDescriptionHTML(jiraIssueContent)}
+          ${this.getJiraIssueAttachmentsHTML(jiraIssueContent)}
+          ${this.getJiraIssueLinksHTML(jiraIssueContent)}
+          ${this.getJiraIssueCommentsHTML(jiraIssueContent)}
         </body>
       </html>`;
   }
 
   setNoJiraIssueView(): void {
+    this._jiraIssueKey = '';
     if (this._view) {
       this._view.webview.html = WebviewViewProvider.getNoJiraIssueViewContent();
     }
@@ -121,6 +146,13 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  setConfigurationRequiredView(missingConfigs: string[]): void {
+    if (this._view) {
+      this._view.webview.html =
+        WebviewViewProvider.getConfigurationRequiredViewContent(missingConfigs);
+    }
+  }
+
   setJiraIssueView(
     jiraIssueKey: string,
     jiraIssueUrl: string,
@@ -130,11 +162,11 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     this._jiraIssueUrl = jiraIssueUrl;
     this._jiraIssueContent = jiraIssueContent;
     if (this._view) {
-      let viewContent: string;
+      let jiraIssueHtml: string;
       if (!jiraIssueContent) {
-        viewContent = WebviewViewProvider.getLoadingJiraIssueViewContent();
+        jiraIssueHtml = WebviewViewProvider.getLoadingJiraIssueViewContent();
       } else {
-        viewContent = WebviewViewProvider.getJiraIssueViewContent(
+        jiraIssueHtml = WebviewViewProvider.getJiraIssueViewContent(
           jiraIssueUrl,
           jiraIssueContent,
           this._extensionUri,
@@ -142,7 +174,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           true
         );
       }
-      this._view.webview.html = viewContent;
+      this._view.webview.html = jiraIssueHtml;
     }
   }
 
@@ -152,9 +184,17 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'media')]
     };
-    let viewContent: string;
+    const missingConfigMessages = getMissingCoreConfigMessages();
+    if (missingConfigMessages.length > 0) {
+      webviewView.webview.html =
+        WebviewViewProvider.getConfigurationRequiredViewContent(
+          missingConfigMessages
+        );
+      return;
+    }
+    let jiraIssueHtml: string;
     if (this._jiraIssueContent) {
-      viewContent = WebviewViewProvider.getJiraIssueViewContent(
+      jiraIssueHtml = WebviewViewProvider.getJiraIssueViewContent(
         this._jiraIssueUrl,
         this._jiraIssueContent,
         this._extensionUri,
@@ -162,27 +202,27 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
         true
       );
     } else {
-      viewContent = WebviewViewProvider.getNoJiraIssueViewContent();
+      jiraIssueHtml = WebviewViewProvider.getNoJiraIssueViewContent();
     }
-    webviewView.webview.html = viewContent;
+    webviewView.webview.html = jiraIssueHtml;
   }
 
-  static _getJiraIssueHeaderHTML(
+  static getJiraIssueHeaderHTML(
     jiraIssueContent: JiraIssue,
-    jiraIssueLink: string
+    jiraIssueUrl: string
   ): string {
     return `<div class="header">
         <img id="project-avatar" src="${jiraIssueContent.fields.project?.avatarUrls['48x48']}" />
         <div class="header-info">
           <p>
-            ${jiraIssueContent.fields.project?.name} / <a href="${jiraIssueLink}"> ${jiraIssueContent.key}</a>
+            ${jiraIssueContent.fields.project?.name} / <a href="${jiraIssueUrl}"> ${jiraIssueContent.key}</a>
           </p>
           <h2>${jiraIssueContent.fields.summary}</h2>
         </div>
       </div>`;
   }
 
-  static _getJiraIssuePeopleHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssuePeopleHTML(jiraIssueContent: JiraIssue): string {
     const assignee: JiraUserInfo | undefined =
       jiraIssueContent.fields.assignee ?? undefined;
     const reporter: JiraUserInfo | undefined =
@@ -220,7 +260,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueDatesHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueDatesHTML(jiraIssueContent: JiraIssue): string {
     return `<h3>Dates</h3>
       <hr>
       <div id="issue-dates">
@@ -236,7 +276,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueDetailsHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueDetailsHTML(jiraIssueContent: JiraIssue): string {
     const typeHTML = `<tr>
         <td>Type:</td>
         <td><img id="type-icon" src="${
@@ -282,8 +322,8 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           <td>
             ${jiraIssueContent.fields.versions
               .map(
-                (v: JiraVersionInfo) =>
-                  `<a href="${getJiraQueryUrl('fixVersion', v.name)}">${v.name}</a>`
+                (version: JiraVersionInfo) =>
+                  `<a href="${getJiraQueryUrl('fixVersion', version.name)}">${version.name}</a>`
               )
               .join(', ')}
           </td>
@@ -295,8 +335,8 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           <td>
             ${jiraIssueContent.fields.fixVersions
               .map(
-                (v: JiraVersionInfo) =>
-                  `<a href="${getJiraQueryUrl('fixVersion', v.name)}">${v.name}</a>`
+                (version: JiraVersionInfo) =>
+                  `<a href="${getJiraQueryUrl('fixVersion', version.name)}">${version.name}</a>`
               )
               .join(', ')}</td>
         </tr>`
@@ -307,8 +347,8 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           <td>
             ${jiraIssueContent.fields.components
               .map(
-                (c: JiraComponentInfo) =>
-                  `<a href="${getJiraQueryUrl('component', c.name)}">${c.name}</a>`
+                (component: JiraComponentInfo) =>
+                  `<a href="${getJiraQueryUrl('component', component.name)}">${component.name}</a>`
               )
               .join(', ')}
           </td>
@@ -320,8 +360,8 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
           <td>
             ${jiraIssueContent.fields.labels
               .map(
-                (l: string) =>
-                  `<a href="${getJiraQueryUrl('labels', l)}">${l}</a>`
+                (label: string) =>
+                  `<a href="${getJiraQueryUrl('labels', label)}">${label}</a>`
               )
               .join(', ')}
           </td>
@@ -348,7 +388,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </table>`;
   }
 
-  static _getJiraIssueDescriptionHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueDescriptionHTML(jiraIssueContent: JiraIssue): string {
     return `<h3>Description</h3>
       <hr>
       <div id="issue-description">
@@ -356,7 +396,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </div>`;
   }
 
-  static _getJiraIssueAttachmentsHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueAttachmentsHTML(jiraIssueContent: JiraIssue): string {
     const attachments: JiraAttachmentInfo[] | undefined =
       jiraIssueContent.fields.attachment;
     if (!attachments || attachments.length === 0) {
@@ -366,12 +406,15 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       <hr>
       <div id="attachments">
         ${attachments
-          .map((a) => ` <a href='${a.content}'>${a.filename}</a><br>`)
+          .map(
+            (attachment) =>
+              ` <a href='${attachment.content}'>${attachment.filename}</a><br>`
+          )
           .join('')}
       </div>`;
   }
 
-  static _getJiraIssueLinksHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueLinksHTML(jiraIssueContent: JiraIssue): string {
     const issueLinks: JiraIssueLinkInfo[] | undefined =
       jiraIssueContent.fields.issuelinks;
     if (!issueLinks || issueLinks.length === 0) {
@@ -379,15 +422,16 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
     }
     const relationshipToIssueLinks = new Map<string, JiraIssueLinkInfo[]>();
     for (const issueLink of issueLinks) {
-      let issueType = issueLink.inwardIssue
+      let linkDirection = issueLink.inwardIssue
         ? issueLink.type.inward
         : issueLink.type.outward;
-      if (!issueType) {
-        issueType = 'relates to';
+      if (!linkDirection) {
+        linkDirection = 'relates to';
       }
-      const existingIssueLinks = relationshipToIssueLinks.get(issueType) ?? [];
+      const existingIssueLinks =
+        relationshipToIssueLinks.get(linkDirection) ?? [];
       existingIssueLinks.push(issueLink);
-      relationshipToIssueLinks.set(issueType, existingIssueLinks);
+      relationshipToIssueLinks.set(linkDirection, existingIssueLinks);
     }
     const getIssueLinkDetailsHTML = (link: JiraIssueLinkInfo): string => {
       const linkedIssue = link.inwardIssue ?? link.outwardIssue;
@@ -436,7 +480,7 @@ export default class WebviewViewProvider implements vscode.WebviewViewProvider {
       </table>`;
   }
 
-  static _getJiraIssueCommentsHTML(jiraIssueContent: JiraIssue): string {
+  static getJiraIssueCommentsHTML(jiraIssueContent: JiraIssue): string {
     const comments: JiraCommentInfo[] | undefined =
       jiraIssueContent.fields.comment?.comments;
     if (!comments || comments.length === 0) {

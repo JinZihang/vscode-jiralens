@@ -45,35 +45,35 @@ export default class InlineMessageController {
   }
 
   private getRelativeTimePassed(curr: number, prev: number): string {
-    const msMinute = 60 * 1000;
-    const msHour = msMinute * 60;
-    const msDay = msHour * 24;
-    const msMonth = msDay * 30;
-    const msYear = msDay * 365;
+    const minuteMs = 60 * 1000;
+    const hourMs = minuteMs * 60;
+    const dayMs = hourMs * 24;
+    const monthMs = dayMs * 30;
+    const yearMs = dayMs * 365;
     const elapsedTime = curr - prev;
-    let value = 0;
-    let unit = '';
-    if (elapsedTime < msMinute) {
-      value = Math.round(elapsedTime / 1000);
-      unit = 'second';
-    } else if (elapsedTime < msHour) {
-      value = Math.round(elapsedTime / msMinute);
-      unit = 'minute';
-    } else if (elapsedTime < msDay) {
-      value = Math.round(elapsedTime / msHour);
-      unit = 'hour';
-    } else if (elapsedTime < msMonth) {
-      value = Math.round(elapsedTime / msDay);
-      unit = 'day';
-    } else if (elapsedTime < msYear) {
-      value = Math.round(elapsedTime / msMonth);
-      unit = 'month';
+    let elapsedTimeValue = 0;
+    let timeUnit = '';
+    if (elapsedTime < minuteMs) {
+      elapsedTimeValue = Math.round(elapsedTime / 1000);
+      timeUnit = 'second';
+    } else if (elapsedTime < hourMs) {
+      elapsedTimeValue = Math.round(elapsedTime / minuteMs);
+      timeUnit = 'minute';
+    } else if (elapsedTime < dayMs) {
+      elapsedTimeValue = Math.round(elapsedTime / hourMs);
+      timeUnit = 'hour';
+    } else if (elapsedTime < monthMs) {
+      elapsedTimeValue = Math.round(elapsedTime / dayMs);
+      timeUnit = 'day';
+    } else if (elapsedTime < yearMs) {
+      elapsedTimeValue = Math.round(elapsedTime / monthMs);
+      timeUnit = 'month';
     } else {
-      value = Math.round(elapsedTime / msYear);
-      unit = 'year';
+      elapsedTimeValue = Math.round(elapsedTime / yearMs);
+      timeUnit = 'year';
     }
-    const plural = value > 1 ? 's' : '';
-    return `${value} ${unit}${plural} ago`;
+    const plural = elapsedTimeValue > 1 ? 's' : '';
+    return `${elapsedTimeValue} ${timeUnit}${plural} ago`;
   }
 
   private truncateMessage(message: string): string {
@@ -83,10 +83,10 @@ export default class InlineMessageController {
     }
     const words = message.split(' ');
     let truncatedMessage = '';
-    let i = 0;
-    while (truncatedMessage.length + words[i].length < lengthLimit) {
-      truncatedMessage += `${words[i]} `;
-      i++;
+    let wordIndex = 0;
+    while (truncatedMessage.length + words[wordIndex].length < lengthLimit) {
+      truncatedMessage += `${words[wordIndex]} `;
+      wordIndex++;
     }
     return `${truncatedMessage.trim()}...`;
   }
@@ -169,8 +169,8 @@ export default class InlineMessageController {
       }
       const fixVersionsMarkdown = fixVersions
         .map(
-          (v: JiraVersionInfo) =>
-            `[${v.name}](${getJiraQueryUrl('fixVersion', v.name)})`
+          (version: JiraVersionInfo) =>
+            `[${version.name}](${getJiraQueryUrl('fixVersion', version.name)})`
         )
         .join(', ');
       markdown.appendMarkdown(`Fix Versions: ${fixVersionsMarkdown}`);

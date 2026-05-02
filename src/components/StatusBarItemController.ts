@@ -10,8 +10,10 @@ export default class StatusBarItemController {
   private _statusBarItem: vscode.StatusBarItem;
 
   constructor() {
-    this.registerStatusBarItemActiveCommand();
     this._statusBarItem = this.initStatusBarItem();
+    Extension.getInstance()
+      .getContext()
+      .subscriptions.push(this.registerStatusBarItemActiveCommand());
     StatusBarItemController._instance = this;
   }
 

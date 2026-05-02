@@ -14,7 +14,8 @@ export const window = {
   showWarningMessage: vi.fn(),
   showInformationMessage: vi.fn(),
   showInputBox: vi.fn(),
-  showQuickPick: vi.fn()
+  showQuickPick: vi.fn(),
+  registerWebviewViewProvider: vi.fn()
 };
 
 export const commands = {

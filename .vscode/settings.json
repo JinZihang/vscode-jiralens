@@ -13,9 +13,7 @@
   "editor.formatOnSave": true,
   "cSpell.words": [
     "amodio",
-    "CODEOWNERS",
     "commitlint",
-    "commitlintrc",
     "conventionalcommits",
     "issuelinks",
     "issuetype",

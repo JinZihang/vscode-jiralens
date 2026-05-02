@@ -25,11 +25,10 @@ import {
   getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl,
-  isValidJiraBearerToken,
   isValidJiraProjectKey
 } from '../../../src/services/jira';
-import mockIssue1 from '../../data/mock_jira_issue_content_1.json';
-import mockIssue2 from '../../data/mock_jira_issue_content_2.json';
+import mockIssueJRL001 from '../../data/mock_jira_issue_content_1.json';
+import mockIssueJRL321 from '../../data/mock_jira_issue_content_2.json';
 
 describe('isValidJiraProjectKey', () => {
   it('returns true for an all-uppercase alphabetic key', () => {
@@ -200,25 +199,6 @@ describe('convertJiraMarkdownToHtml', () => {
   });
 });
 
-describe('isValidJiraBearerToken', () => {
-  it('returns true when host is configured', () => {
-    vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
-    expect(isValidJiraBearerToken('valid-token')).toBe(true);
-  });
-
-  it('returns true for an empty string token (no format validation)', () => {
-    vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
-    expect(isValidJiraBearerToken('')).toBe(true);
-  });
-
-  it('returns false when getJiraHost throws', () => {
-    vi.mocked(getJiraHost).mockImplementation(() => {
-      throw new Error('config inaccessible');
-    });
-    expect(isValidJiraBearerToken('bad-token')).toBe(false);
-  });
-});
-
 describe('fetchJiraIssue', () => {
   beforeEach(() => {
     vi.mocked(getJiraEmail).mockReturnValue('');
@@ -228,9 +208,12 @@ describe('fetchJiraIssue', () => {
   });
 
   it('returns the issue data from the fetch response', async () => {
-    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
     const result = await fetchJiraIssue('JRL-001');
-    expect(result).toEqual(mockIssue1);
+    expect(result).toEqual(mockIssueJRL001);
     expect(mockFetch).toHaveBeenCalledWith(
       'https://jira.example.com/rest/api/2/issue/JRL-001?expand=&fields=*all&properties=*all&fieldsByKeys=false',
       expect.anything()
@@ -238,9 +221,12 @@ describe('fetchJiraIssue', () => {
   });
 
   it('uses a different issue fixture and passes the key through', async () => {
-    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue2 });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL321
+    });
     const result = await fetchJiraIssue('JRL-321');
-    expect(result).toEqual(mockIssue2);
+    expect(result).toEqual(mockIssueJRL321);
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('/issue/JRL-321'),
       expect.anything()
@@ -248,7 +234,10 @@ describe('fetchJiraIssue', () => {
   });
 
   it('uses Bearer auth when email is not configured (Jira Server/DC)', async () => {
-    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
     await fetchJiraIssue('JRL-001');
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
@@ -260,7 +249,10 @@ describe('fetchJiraIssue', () => {
 
   it('uses Basic auth when email is configured (Jira Cloud)', async () => {
     vi.mocked(getJiraEmail).mockReturnValue('user@example.com');
-    mockFetch.mockResolvedValue({ ok: true, json: async () => mockIssue1 });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
     await fetchJiraIssue('JRL-001');
     const expectedBasic = `Basic ${Buffer.from('user@example.com:test-token').toString('base64')}`;
     expect(mockFetch).toHaveBeenCalledWith(

@@ -178,20 +178,20 @@ vi.mock('../../src/configs', () => ({
 const { set<PascalKey>, /* ...others */ } = await import('../../src/configs');
 
 // 3. describe block:
-describe('register<PascalKey>Command', () => {
+describe('set<PascalKey>Command', () => {
   beforeEach(() => {
     vi.mocked(set<PascalKey>).mockClear();
   });
 
   it('calls set<PascalKey> with user input', async () => {
     vi.mocked(window.showInputBox).mockResolvedValue('value' as any);
-    await capturedCallbacks['jiralens.<commandId>']();
+    await registeredCommandCallbacks['jiralens.<commandId>']();
     expect(set<PascalKey>).toHaveBeenCalledWith('value');
   });
 
   it('does nothing when the user dismisses', async () => {
     vi.mocked(window.showInputBox).mockResolvedValue(undefined as any);
-    await capturedCallbacks['jiralens.<commandId>']();
+    await registeredCommandCallbacks['jiralens.<commandId>']();
     expect(set<PascalKey>).not.toHaveBeenCalled();
   });
 });
