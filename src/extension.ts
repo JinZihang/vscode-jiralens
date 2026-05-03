@@ -6,11 +6,14 @@ import InlineMessageController from './components/InlineMessageController';
 import StatusBarItemController from './components/StatusBarItemController';
 import WebviewController from './components/webview/WebviewController';
 import {
+  getJiraBearerToken,
+  getJiraEmail,
+  getJiraHost,
   getMissingCoreConfigMessages,
   syncWorkspaceConfiguration
 } from './configs';
-import { runGitBlameCommand } from './services/git';
-import { getJiraIssueKey } from './services/jira';
+import { invalidateGitBlameCache, runGitBlameCommand } from './services/git';
+import { getJiraIssueKey, invalidateJiraCache } from './services/jira';
 import { delay } from './utils';
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -22,14 +25,23 @@ export function activate(context: vscode.ExtensionContext): void {
 function bindEventListeners(context: vscode.ExtensionContext): void {
   // Debouncing was removed because any interval low enough to feel responsive
   // (< 200 ms) still fires on every key-repeat (~30 ms), while anything higher
-  // makes deliberate navigation feel sluggish. The correct fix is to cache
-  // git-blame results (F2) and Jira responses (F3) so that repeated onChange
-  // calls are cheap Map lookups rather than subprocess spawns and network
-  // requests. A debounce utility is available in utils.ts if needed once the
-  // caches are in place.
+  // makes deliberate navigation feel sluggish. Both git-blame results and Jira
+  // responses are now cached, so repeated onChange calls are cheap Map lookups.
+  // A debounce utility is available in utils.ts if burst-collapse protection is
+  // ever wanted on top of the caches.
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(() => {
+      const prevHost = getJiraHost();
+      const prevToken = getJiraBearerToken();
+      const prevEmail = getJiraEmail();
       syncWorkspaceConfiguration();
+      if (
+        getJiraHost() !== prevHost ||
+        getJiraBearerToken() !== prevToken ||
+        getJiraEmail() !== prevEmail
+      ) {
+        invalidateJiraCache();
+      }
       onChange();
     }),
     // onDidChangeActiveTextEditor    - change of editor
@@ -47,7 +59,10 @@ function bindEventListeners(context: vscode.ExtensionContext): void {
       onChange();
     }),
     vscode.window.onDidChangeTextEditorSelection(onChange),
-    vscode.workspace.onDidChangeTextDocument(onChange)
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      invalidateGitBlameCache(event.document.uri.fsPath);
+      onChange();
+    })
   );
 }
 

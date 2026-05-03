@@ -1,5 +1,6 @@
 import {
   getJiraBearerToken,
+  getJiraCacheTtlSeconds,
   getJiraEmail,
   getJiraHost,
   getJiraProjectKeys
@@ -52,9 +53,30 @@ export function getJiraQueryUrl(key: string, value: string): string {
   return `https://${getJiraHost()}/issues/?jql=${encodeURIComponent(`${key}="${value}"`)}`;
 }
 
+interface JiraCacheEntry {
+  promise: Promise<JiraIssue | undefined>;
+  timestamp: number;
+}
+
+const _jiraCache = new Map<string, JiraCacheEntry>();
+
+export function invalidateJiraCache(): void {
+  _jiraCache.clear();
+}
+
 export async function fetchJiraIssue(
   jiraIssueKey: string
 ): Promise<JiraIssue | undefined> {
+  const ttlMs = getJiraCacheTtlSeconds() * 1000;
+  const entry = _jiraCache.get(jiraIssueKey);
+  if (entry !== undefined) {
+    const isExpired = ttlMs > 0 && Date.now() - entry.timestamp > ttlMs;
+    if (!isExpired) {
+      return entry.promise;
+    }
+    _jiraCache.delete(jiraIssueKey);
+  }
+
   const host = getJiraHost();
   const token = getJiraBearerToken();
   const email = getJiraEmail();
@@ -62,18 +84,25 @@ export async function fetchJiraIssue(
   const authHeader = email
     ? `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`
     : `Bearer ${token}`;
-  try {
-    const response = await fetch(url, {
-      headers: { Authorization: authHeader, Accept: 'application/json' }
-    });
-    if (!response.ok) {
-      throw new Error(
-        `Jira API error: ${response.status} ${response.statusText}`
-      );
+
+  const promise: Promise<JiraIssue | undefined> = (async () => {
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: authHeader, Accept: 'application/json' }
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Jira API error: ${response.status} ${response.statusText}`
+        );
+      }
+      return (await response.json()) as JiraIssue;
+    } catch (error) {
+      console.error(`Failed to fetch Jira issue ${jiraIssueKey}:`, error);
+      _jiraCache.delete(jiraIssueKey);
+      return undefined;
     }
-    return (await response.json()) as JiraIssue;
-  } catch (error) {
-    console.error(`Failed to fetch Jira issue ${jiraIssueKey}:`, error);
-    return undefined;
-  }
+  })();
+
+  _jiraCache.set(jiraIssueKey, { promise, timestamp: Date.now() });
+  return promise;
 }

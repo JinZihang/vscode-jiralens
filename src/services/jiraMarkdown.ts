@@ -18,11 +18,32 @@ _turndownService.addRule('strikethrough', {
 const conversionFailureMessage =
   'Encountered an error while converting this Jira markdown to HTML for display. Kindly help us resolve this issue by reporting it <a href="https://github.com/JinZihang/vscode-jiralens/issues/23">here</a>.';
 
+// Conversion is deterministic and can be expensive for large inputs (comments
+// loop, long descriptions). Cap at 200 entries; evict the oldest on overflow.
+const MAX_CACHE_ENTRIES = 200;
+const _htmlCache = new Map<string, string>();
+const _markdownCache = new Map<string, string>();
+
+function evictOldest(cache: Map<string, string>): void {
+  if (cache.size >= MAX_CACHE_ENTRIES) {
+    cache.delete(cache.keys().next().value!);
+  }
+}
+
+export function clearMarkdownCache(): void {
+  _htmlCache.clear();
+  _markdownCache.clear();
+}
+
 export function convertJiraMarkdownToHtml(
   markdown: string | null | undefined
 ): string {
   if (!markdown) {
     return '';
+  }
+  const cached = _htmlCache.get(markdown);
+  if (cached !== undefined) {
+    return cached;
   }
   try {
     const pmNode = _transformer.parse(markdown);
@@ -32,7 +53,10 @@ export function convertJiraMarkdownToHtml(
       { document: _document },
       target
     ) as HTMLElement;
-    return html.outerHTML;
+    const result = html.outerHTML;
+    evictOldest(_htmlCache);
+    _htmlCache.set(markdown, result);
+    return result;
   } catch (error) {
     console.debug('Failed to convert Jira markdown to HTML:', markdown, error);
     return conversionFailureMessage;
@@ -42,12 +66,22 @@ export function convertJiraMarkdownToHtml(
 export function convertJiraMarkdownToNormalMarkdown(
   markdown: string | null | undefined
 ): string {
+  if (!markdown) {
+    return '';
+  }
+  const cached = _markdownCache.get(markdown);
+  if (cached !== undefined) {
+    return cached;
+  }
   try {
     const html = convertJiraMarkdownToHtml(markdown);
     if (html === conversionFailureMessage) {
       return 'Encountered an error while converting this Jira markdown to HTML for display. Kindly help us resolve this issue by reporting it [here](https://github.com/JinZihang/vscode-jiralens/issues/23).';
     }
-    return _turndownService.turndown(html);
+    const result = _turndownService.turndown(html);
+    evictOldest(_markdownCache);
+    _markdownCache.set(markdown, result);
+    return result;
   } catch (error) {
     console.debug(
       'Failed to convert Jira markdown to normal markdown:',

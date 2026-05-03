@@ -16,6 +16,7 @@ let _showInlineJiraIssueKey =
   wsConfig.get<boolean>('inlineJiraIssueKey') ?? true;
 let _showInlineCommitMessage =
   wsConfig.get<boolean>('inlineCommitMessage') ?? false;
+let _jiraCacheTtlSeconds = wsConfig.get<number>('jiraCacheTtlSeconds') ?? 300;
 
 export function syncWorkspaceConfiguration(): void {
   wsConfig = vscode.workspace.getConfiguration('jiralens');
@@ -29,6 +30,7 @@ export function syncWorkspaceConfiguration(): void {
   _showInlineJiraIssueKey = wsConfig.get<boolean>('inlineJiraIssueKey') ?? true;
   _showInlineCommitMessage =
     wsConfig.get<boolean>('inlineCommitMessage') ?? false;
+  _jiraCacheTtlSeconds = wsConfig.get<number>('jiraCacheTtlSeconds') ?? 300;
 }
 
 async function setConfig<T>(
@@ -142,6 +144,11 @@ export async function setShowInlineJiraIssueKey(
 // jiralens.inlineCommitMessage
 export function getShowInlineCommitMessage(): boolean {
   return _showInlineCommitMessage;
+}
+
+// jiralens.jiraCacheTtlSeconds
+export function getJiraCacheTtlSeconds(): number {
+  return _jiraCacheTtlSeconds;
 }
 export async function setShowInlineCommitMessage(
   show: boolean

@@ -1,11 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { clearMarkdownCache } from '../../../src/services/jiraMarkdown';
+
 // Mock the configs module so jira.ts pure functions can be tested in isolation
 vi.mock('../../../src/configs', () => ({
   getJiraHost: vi.fn().mockReturnValue('jira.example.com'),
   getJiraProjectKeys: vi.fn().mockReturnValue(['JRL', 'ABC']),
   getJiraBearerToken: vi.fn().mockReturnValue('test-token'),
-  getJiraEmail: vi.fn().mockReturnValue('')
+  getJiraEmail: vi.fn().mockReturnValue(''),
+  getJiraCacheTtlSeconds: vi.fn().mockReturnValue(300)
 }));
 
 const mockFetch = vi.fn();
@@ -13,6 +16,7 @@ vi.stubGlobal('fetch', mockFetch);
 
 import {
   getJiraBearerToken,
+  getJiraCacheTtlSeconds,
   getJiraEmail,
   getJiraHost,
   getJiraProjectKeys
@@ -25,10 +29,15 @@ import {
   getJiraIssueUrl,
   getJiraProfileUrl,
   getJiraQueryUrl,
+  invalidateJiraCache,
   isValidJiraProjectKey
 } from '../../../src/services/jira';
 import mockIssueJRL001 from '../../data/mock_jira_issue_content_1.json';
 import mockIssueJRL321 from '../../data/mock_jira_issue_content_2.json';
+
+beforeEach(() => {
+  clearMarkdownCache();
+});
 
 describe('isValidJiraProjectKey', () => {
   it('returns true for an all-uppercase alphabetic key', () => {
@@ -190,6 +199,12 @@ describe('convertJiraMarkdownToHtml', () => {
   it('returns empty string for empty string input', () => {
     expect(convertJiraMarkdownToHtml('')).toBe('');
   });
+
+  it('returns identical result on repeated call for same input (cache regression guard)', () => {
+    const first = convertJiraMarkdownToHtml('*bold text*');
+    const second = convertJiraMarkdownToHtml('*bold text*');
+    expect(second).toBe(first);
+  });
 });
 
 describe('fetchJiraIssue', () => {
@@ -197,7 +212,9 @@ describe('fetchJiraIssue', () => {
     vi.mocked(getJiraEmail).mockReturnValue('');
     vi.mocked(getJiraHost).mockReturnValue('jira.example.com');
     vi.mocked(getJiraBearerToken).mockReturnValue('test-token');
+    vi.mocked(getJiraCacheTtlSeconds).mockReturnValue(300);
     mockFetch.mockReset();
+    invalidateJiraCache();
   });
 
   it('returns the issue data from the fetch response', async () => {
@@ -271,6 +288,80 @@ describe('fetchJiraIssue', () => {
     const result = await fetchJiraIssue('JRL-001');
     expect(result).toBeUndefined();
   });
+
+  it('returns cached result on repeated call for same key without re-fetching', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
+    const first = await fetchJiraIssue('JRL-001');
+    const second = await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(second).toEqual(first);
+  });
+
+  it('deduplicates concurrent in-flight requests for the same key', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
+    const [first, second] = await Promise.all([
+      fetchJiraIssue('JRL-001'),
+      fetchJiraIssue('JRL-001')
+    ]);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(first).toEqual(mockIssueJRL001);
+    expect(second).toEqual(mockIssueJRL001);
+  });
+
+  it('re-fetches after the TTL expires', async () => {
+    const mockNow = vi.spyOn(Date, 'now');
+    mockNow.mockReturnValue(0);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
+
+    await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    mockNow.mockReturnValue(301_000); // 301 s — past the 300 s TTL
+    await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    mockNow.mockRestore();
+  });
+
+  it('never expires the cache when TTL is 0', async () => {
+    vi.mocked(getJiraCacheTtlSeconds).mockReturnValue(0);
+    const mockNow = vi.spyOn(Date, 'now');
+    mockNow.mockReturnValue(0);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
+
+    await fetchJiraIssue('JRL-001');
+    mockNow.mockReturnValue(999_999_000);
+    await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    mockNow.mockRestore();
+  });
+
+  it('retries after a failed fetch (failures are not cached)', async () => {
+    mockFetch
+      .mockRejectedValueOnce(new Error('network failure'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockIssueJRL001
+      });
+    const first = await fetchJiraIssue('JRL-001');
+    const second = await fetchJiraIssue('JRL-001');
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(first).toBeUndefined();
+    expect(second).toEqual(mockIssueJRL001);
+  });
 });
 
 describe('convertJiraMarkdownToNormalMarkdown', () => {
@@ -315,5 +406,18 @@ describe('convertJiraMarkdownToNormalMarkdown', () => {
   it('passes plain text through unchanged', () => {
     const result = convertJiraMarkdownToNormalMarkdown('Just plain text');
     expect(result).toContain('Just plain text');
+  });
+
+  it('returns identical result on repeated call for same input (cache regression guard)', () => {
+    const first = convertJiraMarkdownToNormalMarkdown('*bold text*');
+    const second = convertJiraMarkdownToNormalMarkdown('*bold text*');
+    expect(second).toBe(first);
+  });
+
+  it('returns correct result after cache is cleared', () => {
+    const before = convertJiraMarkdownToNormalMarkdown('*bold text*');
+    clearMarkdownCache();
+    const after = convertJiraMarkdownToNormalMarkdown('*bold text*');
+    expect(after).toBe(before);
   });
 });
