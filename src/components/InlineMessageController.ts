@@ -139,7 +139,7 @@ export default class InlineMessageController {
       // The message with loading hover modal should have been hidden by the new rendering call
       return;
     }
-    activeEditor = vscode.window.activeTextEditor!;
+    activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {
       return;
     }

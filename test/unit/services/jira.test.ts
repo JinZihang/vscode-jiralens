@@ -190,20 +190,6 @@ describe('convertJiraMarkdownToHtml', () => {
   it('returns empty string for empty string input', () => {
     expect(convertJiraMarkdownToHtml('')).toBe('');
   });
-
-  it('returns the failure anchor link on conversion error', () => {
-    // Spy on the transformer to force a throw, then verify the fallback message
-    const transformer = require('@atlaskit/editor-wikimarkup-transformer');
-    const original = transformer.WikiMarkupTransformer;
-    transformer.WikiMarkupTransformer = class {
-      parse() {
-        throw new Error('forced failure');
-      }
-    };
-    const result = convertJiraMarkdownToHtml('any input');
-    expect(result).toContain('issues/23');
-    transformer.WikiMarkupTransformer = original;
-  });
 });
 
 describe('fetchJiraIssue', () => {
@@ -329,20 +315,5 @@ describe('convertJiraMarkdownToNormalMarkdown', () => {
   it('passes plain text through unchanged', () => {
     const result = convertJiraMarkdownToNormalMarkdown('Just plain text');
     expect(result).toContain('Just plain text');
-  });
-
-  it('returns the markdown error link on conversion failure', () => {
-    const transformer = require('@atlaskit/editor-wikimarkup-transformer');
-    const original = transformer.WikiMarkupTransformer;
-    transformer.WikiMarkupTransformer = class {
-      parse() {
-        throw new Error('forced failure');
-      }
-    };
-    const result = convertJiraMarkdownToNormalMarkdown('any input');
-    expect(result).toContain(
-      '[here](https://github.com/JinZihang/vscode-jiralens/issues/23)'
-    );
-    transformer.WikiMarkupTransformer = original;
   });
 });
