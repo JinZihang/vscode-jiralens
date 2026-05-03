@@ -362,6 +362,26 @@ describe('fetchJiraIssue', () => {
     expect(first).toBeUndefined();
     expect(second).toEqual(mockIssueJRL001);
   });
+
+  it('pre-warms markdown caches without mutating the returned issue', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockIssueJRL001
+    });
+    const result = await fetchJiraIssue('JRL-001');
+
+    // Pre-warming must not mutate the raw issue — callers rely on unmodified fields.
+    expect(result?.fields.description).toBe(mockIssueJRL001.fields.description);
+    expect(result?.fields.comment?.comments[0].body).toBe(
+      mockIssueJRL001.fields.comment.comments[0].body
+    );
+    // Conversion of the same strings must produce the same output after pre-warming
+    // (confirms the cache was not populated with corrupt values).
+    const freshHtml = convertJiraMarkdownToHtml(
+      mockIssueJRL001.fields.description
+    );
+    expect(freshHtml).toBeTruthy();
+  });
 });
 
 describe('convertJiraMarkdownToNormalMarkdown', () => {

@@ -6,11 +6,11 @@ import {
   getJiraProjectKeys
 } from '../configs';
 import { JiraIssue } from './jira.types';
-
-export {
+import {
   convertJiraMarkdownToHtml,
   convertJiraMarkdownToNormalMarkdown
 } from './jiraMarkdown';
+export { convertJiraMarkdownToHtml, convertJiraMarkdownToNormalMarkdown };
 
 export function isValidJiraProjectKey(key: string): boolean {
   const regex = /^[A-Z0-9]+$/;
@@ -95,7 +95,13 @@ export async function fetchJiraIssue(
           `Jira API error: ${response.status} ${response.statusText}`
         );
       }
-      return (await response.json()) as JiraIssue;
+      const issue = (await response.json()) as JiraIssue;
+      convertJiraMarkdownToHtml(issue.fields.description);
+      convertJiraMarkdownToNormalMarkdown(issue.fields.description);
+      for (const comment of issue.fields.comment?.comments ?? []) {
+        convertJiraMarkdownToHtml(comment.body);
+      }
+      return issue;
     } catch (error) {
       console.error(`Failed to fetch Jira issue ${jiraIssueKey}:`, error);
       _jiraCache.delete(jiraIssueKey);
