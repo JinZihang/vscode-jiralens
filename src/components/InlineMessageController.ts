@@ -97,11 +97,9 @@ export default class InlineMessageController {
       return;
     }
     let activeLine = activeEditor.document.lineAt(lineNumber);
-    /**
-     * Since hasTargetLineChanged() is not based on the active editor, if the active line
-     * changed while running the git blame command, the range to render will be incorrect.
-     * However, as the git blame command runs fast, we expect the situation to not happen.
-     */
+    // Since hasTargetLineChanged() is not based on the active editor, if the active line
+    // changed while running the git blame command, the range to render will be incorrect.
+    // However, as the git blame command runs fast, we expect the situation to not happen.
     let range = new vscode.Range(
       activeLine.lineNumber,
       activeLine.text.length,
@@ -141,7 +139,7 @@ export default class InlineMessageController {
       // The message with loading hover modal should have been hidden by the new rendering call
       return;
     }
-    activeEditor = vscode.window.activeTextEditor!;
+    activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {
       return;
     }

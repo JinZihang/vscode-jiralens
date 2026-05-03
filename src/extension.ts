@@ -20,26 +20,29 @@ export function activate(context: vscode.ExtensionContext): void {
 }
 
 function bindEventListeners(context: vscode.ExtensionContext): void {
+  // Debouncing was removed because any interval low enough to feel responsive
+  // (< 200 ms) still fires on every key-repeat (~30 ms), while anything higher
+  // makes deliberate navigation feel sluggish. The correct fix is to cache
+  // git-blame results (F2) and Jira responses (F3) so that repeated onChange
+  // calls are cheap Map lookups rather than subprocess spawns and network
+  // requests. A debounce utility is available in utils.ts if needed once the
+  // caches are in place.
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(() => {
       syncWorkspaceConfiguration();
       onChange();
     }),
-    /**
-     * onDidChangeActiveTextEditor    - change of editor
-     * onDidChangeTextEditorSelection - change of selection
-     * onDidChangeTextDocument        - change of content
-     *
-     * After file A line 1 -> file B:
-     * 1. file B -> file A line 1     - trigger change of editor
-     * 2. file B -> file A line 2     - trigger change of editor and selection
-     */
+    // onDidChangeActiveTextEditor    - change of editor
+    // onDidChangeTextEditorSelection - change of selection
+    // onDidChangeTextDocument        - change of content
+    //
+    // After file A line 1 -> file B:
+    // 1. file B -> file A line 1     - trigger change of editor
+    // 2. file B -> file A line 2     - trigger change of editor and selection
     vscode.window.onDidChangeActiveTextEditor(async () => {
-      /**
-       * This could be triggered before the active line gets updated. Then, the git blame command
-       * will run against a wrong line number and cause inline message to render incorrectly. To
-       * avoid that, wait for a short period of time before requesting the information.
-       */
+      // This could be triggered before the active line gets updated. Then, the git blame command
+      // will run against a wrong line number and cause inline message to render incorrectly. To
+      // avoid that, wait for a short period of time before requesting the information.
       await delay(50);
       onChange();
     }),

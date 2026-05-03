@@ -15,7 +15,13 @@ export const window = {
   showInformationMessage: vi.fn(),
   showInputBox: vi.fn(),
   showQuickPick: vi.fn(),
-  registerWebviewViewProvider: vi.fn()
+  registerWebviewViewProvider: vi.fn(),
+  createStatusBarItem: vi.fn()
+};
+
+export const StatusBarAlignment = {
+  Left: 1,
+  Right: 2
 };
 
 export const commands = {

@@ -57,6 +57,16 @@ export function truncateMessage(message: string, lengthLimit = 30): string {
   return `${truncatedMessage.trim()}...`;
 }
 
+export function debounce(fn: () => void, ms: number): () => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return () => {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(fn, ms);
+  };
+}
+
 export function getNonce(): string {
   let text = '';
   const possible =

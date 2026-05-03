@@ -8,7 +8,8 @@ import {
   getShowInlineCommitMessage,
   getShowInlineCommitter,
   getShowInlineJiraIssueKey,
-  getShowInlineRelativeCommitTime
+  getShowInlineRelativeCommitTime,
+  syncWorkspaceConfiguration
 } from '../../src/configs';
 
 // wsConfig in configs.ts is initialised at module load via workspace.getConfiguration().
@@ -22,11 +23,13 @@ beforeEach(() => {
 describe('getJiraEmail', () => {
   it('returns the configured email', () => {
     mockGet.mockReturnValue('user@example.com');
+    syncWorkspaceConfiguration();
     expect(getJiraEmail()).toBe('user@example.com');
   });
 
   it('returns an empty string when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getJiraEmail()).toBe('');
   });
 });
@@ -34,11 +37,13 @@ describe('getJiraEmail', () => {
 describe('getJiraProjectKeys', () => {
   it('returns the configured keys', () => {
     mockGet.mockReturnValue(['PROJ', 'ABC']);
+    syncWorkspaceConfiguration();
     expect(getJiraProjectKeys()).toEqual(['PROJ', 'ABC']);
   });
 
   it('returns an empty array when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getJiraProjectKeys()).toEqual([]);
   });
 });
@@ -46,11 +51,13 @@ describe('getJiraProjectKeys', () => {
 describe('getShowInlineCommitter', () => {
   it('returns the configured value', () => {
     mockGet.mockReturnValue(false);
+    syncWorkspaceConfiguration();
     expect(getShowInlineCommitter()).toBe(false);
   });
 
   it('returns true when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getShowInlineCommitter()).toBe(true);
   });
 });
@@ -58,11 +65,13 @@ describe('getShowInlineCommitter', () => {
 describe('getShowInlineRelativeCommitTime', () => {
   it('returns the configured value', () => {
     mockGet.mockReturnValue(false);
+    syncWorkspaceConfiguration();
     expect(getShowInlineRelativeCommitTime()).toBe(false);
   });
 
   it('returns true when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getShowInlineRelativeCommitTime()).toBe(true);
   });
 });
@@ -70,11 +79,13 @@ describe('getShowInlineRelativeCommitTime', () => {
 describe('getShowInlineJiraIssueKey', () => {
   it('returns the configured value', () => {
     mockGet.mockReturnValue(false);
+    syncWorkspaceConfiguration();
     expect(getShowInlineJiraIssueKey()).toBe(false);
   });
 
   it('returns true when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getShowInlineJiraIssueKey()).toBe(true);
   });
 });
@@ -82,11 +93,13 @@ describe('getShowInlineJiraIssueKey', () => {
 describe('getShowInlineCommitMessage', () => {
   it('returns the configured value', () => {
     mockGet.mockReturnValue(true);
+    syncWorkspaceConfiguration();
     expect(getShowInlineCommitMessage()).toBe(true);
   });
 
   it('returns false when the setting is undefined', () => {
     mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
     expect(getShowInlineCommitMessage()).toBe(false);
   });
 });
@@ -104,6 +117,7 @@ describe('getMissingCoreConfigMessages', () => {
         return ['PROJ'];
       }
     });
+    syncWorkspaceConfiguration();
     expect(getMissingCoreConfigMessages()).toEqual([]);
   });
 
@@ -119,6 +133,7 @@ describe('getMissingCoreConfigMessages', () => {
         return ['PROJ'];
       }
     });
+    syncWorkspaceConfiguration();
     const result = getMissingCoreConfigMessages();
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('Jira Host');
@@ -136,6 +151,7 @@ describe('getMissingCoreConfigMessages', () => {
         return ['PROJ'];
       }
     });
+    syncWorkspaceConfiguration();
     const result = getMissingCoreConfigMessages();
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('API / Personal Access Token');
@@ -153,6 +169,7 @@ describe('getMissingCoreConfigMessages', () => {
         return [];
       }
     });
+    syncWorkspaceConfiguration();
     const result = getMissingCoreConfigMessages();
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('Jira Project Keys');
@@ -170,6 +187,22 @@ describe('getMissingCoreConfigMessages', () => {
         return [];
       }
     });
+    syncWorkspaceConfiguration();
     expect(getMissingCoreConfigMessages()).toHaveLength(3);
+  });
+});
+
+describe('syncWorkspaceConfiguration', () => {
+  it('updates the cache so getters reflect the new value without re-reading vsConfig', () => {
+    mockGet.mockReturnValue('first@example.com');
+    syncWorkspaceConfiguration();
+    expect(getJiraEmail()).toBe('first@example.com');
+
+    mockGet.mockReturnValue('second@example.com');
+    // Cache is stale until sync is called
+    expect(getJiraEmail()).toBe('first@example.com');
+
+    syncWorkspaceConfiguration();
+    expect(getJiraEmail()).toBe('second@example.com');
   });
 });

@@ -10,6 +10,7 @@ export { STATUS_BAR_ITEM_ACTIVE };
 export default class StatusBarItemController {
   private static _instance: StatusBarItemController;
   private _statusBarItem: vscode.StatusBarItem;
+  private _currentKey = '';
 
   constructor() {
     this._statusBarItem = this.initStatusBarItem();
@@ -61,14 +62,20 @@ export default class StatusBarItemController {
   }
 
   renderStatusBarItem(jiraIssueKey: string): void {
+    if (jiraIssueKey === this._currentKey) {
+      return;
+    }
+    this._currentKey = jiraIssueKey;
     if (!jiraIssueKey) {
       this.hideStatusBarItem();
+      return;
     }
     this._statusBarItem.text = jiraIssueKey;
     this._statusBarItem.show();
   }
 
   hideStatusBarItem(): void {
+    this._currentKey = '';
     this._statusBarItem.text = '';
     this._statusBarItem.hide();
   }

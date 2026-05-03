@@ -16,12 +16,22 @@ export function isValidJiraProjectKey(key: string): boolean {
   return regex.test(key);
 }
 
+// Compiled once per project key and reused across calls — getJiraIssueKey() is
+// invoked on every cursor move, so avoiding repeated `new RegExp(...)` per key
+// per keystroke is worthwhile. The map stays small: entries come only from the
+// user-configured jiralens.jiraProjectKeys setting, never from unbounded input.
+const _issueKeyRegexCache = new Map<string, RegExp>();
+
 export function getJiraIssueKey(commitMessage: string): string {
   const projectKeys = getJiraProjectKeys();
   // Expect every commit message to contain only one Jira issue key
   for (const key of projectKeys) {
     // Examples: JRL-123, JRL12345
-    const regex = new RegExp(`${key}-?\\d+`, 'g');
+    let regex = _issueKeyRegexCache.get(key);
+    if (!regex) {
+      regex = new RegExp(`${key}-?\\d+`, 'g');
+      _issueKeyRegexCache.set(key, regex);
+    }
     const matches = commitMessage.match(regex);
     if (matches && matches.length > 0) {
       return matches[0];
