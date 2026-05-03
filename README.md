@@ -22,6 +22,9 @@ Encountering challenges or envisioning new features? Share your experiences and 
     - [Jira Cloud](#jira-cloud 'Jump to Jira Cloud')
     - [Jira Server / Data Center](#jira-server--data-center 'Jump to Jira Server / Data Center')
   - [Project Keys](#project-keys 'Jump to Project Keys')
+- [Data Caching](#data-caching 'Jump to Data Caching')
+  - [Jira Issue Data](#jira-issue-data 'Jump to Jira Issue Data')
+  - [Git Blame and Markdown Conversion](#git-blame-and-markdown-conversion 'Jump to Git Blame and Markdown Conversion')
 - [Known Issues](#known-issues 'Jump to Known Issues')
 
 ## Introduction
@@ -121,6 +124,29 @@ Jira Server and Data Center use a Personal Access Token (PAT).
 ### Project Keys
 
 Refer to [this documentation](https://support.atlassian.com/jira-software-cloud/docs/what-is-an-issue/) for the definition of Jira issue key and Jira project key. If an issue's key is `JRL-123`, then its corresponding project key is `JRL`.
+
+## Data Caching
+
+JiraLens caches data locally in memory to keep the inline message, hover modal, and sidebar responsive as you navigate your code.
+
+### Jira Issue Data
+
+Fetched Jira issue details are kept in memory and reused for subsequent views of the same issue. By default, a cached issue is considered fresh for **5 minutes** before being re-fetched. You can adjust this in VS Code settings via `jiralens.jiraCacheTtlSeconds`:
+
+- Set a **lower value** to see more up-to-date issue details at the cost of more network requests.
+- Set a **higher value** to reduce network requests; data may be slightly behind what is on Jira.
+- Set to **0** to keep fetched issues for the entire session without ever re-fetching.
+
+The cache is automatically cleared whenever you change your Jira host or authentication credentials, so you will always see data from the correct server with the correct account.
+
+### Git Blame and Markdown Conversion
+
+Git blame results and Jira markup conversions are also cached automatically. These caches have no user-facing setting because they manage themselves safely:
+
+- **Git blame** — Cleared immediately for a file whenever you edit it, so you always see current blame data. There is no risk of stale results because every keystroke that changes a file also clears that file's cached blame entries.
+- **Markdown conversion** — Capped at 200 entries per session. Because the same Jira markup always produces the same output, the result is stored and reused rather than recomputed. 200 entries covers far more than a typical session needs (most developers encounter far fewer than 200 distinct issue descriptions in one sitting), keeping the total memory footprint well under a few megabytes.
+
+If you notice any sluggishness or unexpected memory usage, please [open a GitHub issue](https://github.com/JinZihang/vscode-jiralens/issues) and describe your experience — it helps us tune the caches further.
 
 ## Known Issues
 

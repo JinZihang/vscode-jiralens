@@ -72,19 +72,24 @@ test/
 - **Config layer**: All reads/writes to `vscode.workspace.getConfiguration('jiralens')` go through `src/configs.ts`. Call `syncWorkspaceConfiguration()` after any write to refresh the module-level cache.
 - **Jira API call**: `fetchJiraIssue()` in `src/services/jira.ts` makes a single `GET /rest/api/2/issue/{key}` call using the Node.js global `fetch`. Auth is `Authorization: Basic base64(email:token)` for Jira Cloud and `Authorization: Bearer {token}` for Jira Server/DC. No external HTTP library is used.
 - **Jira markdown pipeline**: Lives in `src/services/jiraMarkdown.ts`. Jira wiki markup → ProseMirror node (via `@atlaskit/editor-wikimarkup-transformer`) → HTML (via `prosemirror-model` DOMSerializer + jsdom) → normal markdown (via turndown). Re-exported from `jira.ts` for convenience.
+- **In-memory caches**: Three session-scoped caches reduce hot-path overhead. All are module-level Maps that survive for the lifetime of the extension host process.
+  - _Git blame_ (`src/services/git.ts`): `Map<string, GitBlameInfo>` keyed by `"filePath:lineNumber"`. Invalidated for the entire file on every `onDidChangeTextDocument` event via `invalidateGitBlameCache(filePath)` in `extension.ts`. No size cap is enforced — editing patterns keep the map naturally small, and entries are wiped file-by-file on every save.
+  - _Jira issues_ (`src/services/jira.ts`): `Map<string, { promise, timestamp }>` keyed by issue key. The `Promise` itself is stored so concurrent callers for the same key share one in-flight request rather than firing duplicates. TTL is controlled by `jiralens.jiraCacheTtlSeconds` (default 300 s; 0 = session-scoped, never expires). Cleared entirely when `jiraHost`, `jiraBearerToken`, or `jiraEmail` changes in `onDidChangeConfiguration`.
+  - _Markdown conversion_ (`src/services/jiraMarkdown.ts`): Two `Map<string, string>` caches — `_htmlCache` and `_markdownCache` — keyed by raw input string. Both are hard-capped at 200 entries with FIFO eviction via `evictOldest()`. Conversion is deterministic so no TTL is needed; the same markup always produces the same output.
 
 ## Configuration Keys (`jiralens.*`)
 
-| Key                        | Type     | Default             | Description                                                 |
-| -------------------------- | -------- | ------------------- | ----------------------------------------------------------- |
-| `jiraHost`                 | string   | `jira.jiralens.com` | Jira instance host                                          |
-| `jiraEmail`                | string   | `""`                | Email for Jira Cloud basic auth (leave empty for Server/DC) |
-| `jiraBearerToken`          | string   | `""`                | PAT for Jira Server/DC, or API token for Jira Cloud         |
-| `jiraProjectKeys`          | string[] | `[]`                | Project key list for issue key extraction                   |
-| `inlineCommitter`          | boolean  | `true`              | Show committer in inline message                            |
-| `inlineRelativeCommitTime` | boolean  | `true`              | Show relative commit time                                   |
-| `inlineJiraIssueKey`       | boolean  | `true`              | Show Jira issue key                                         |
-| `inlineCommitMessage`      | boolean  | `false`             | Show commit message                                         |
+| Key                        | Type     | Default             | Description                                                                                |
+| -------------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| `jiraHost`                 | string   | `jira.jiralens.com` | Jira instance host                                                                         |
+| `jiraEmail`                | string   | `""`                | Email for Jira Cloud basic auth (leave empty for Server/DC)                                |
+| `jiraBearerToken`          | string   | `""`                | PAT for Jira Server/DC, or API token for Jira Cloud                                        |
+| `jiraProjectKeys`          | string[] | `[]`                | Project key list for issue key extraction                                                  |
+| `inlineCommitter`          | boolean  | `true`              | Show committer in inline message                                                           |
+| `inlineRelativeCommitTime` | boolean  | `true`              | Show relative commit time                                                                  |
+| `inlineJiraIssueKey`       | boolean  | `true`              | Show Jira issue key                                                                        |
+| `inlineCommitMessage`      | boolean  | `false`             | Show commit message                                                                        |
+| `jiraCacheTtlSeconds`      | number   | `300`               | Seconds to keep a fetched Jira issue before re-fetching; `0` = keep for the entire session |
 
 ## Working Practices
 

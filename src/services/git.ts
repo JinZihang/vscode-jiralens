@@ -3,6 +3,20 @@ import * as vscode from 'vscode';
 
 import { GitBlameCommandInfo, GitBlameInfo } from './git.types';
 
+const _gitBlameCache = new Map<string, GitBlameInfo>();
+
+export function invalidateGitBlameCache(filePath: string): void {
+  for (const key of _gitBlameCache.keys()) {
+    if (key.startsWith(`${filePath}:`)) {
+      _gitBlameCache.delete(key);
+    }
+  }
+}
+
+export function clearGitBlameCache(): void {
+  _gitBlameCache.clear();
+}
+
 function parseGitBlameResponse(blame: string): GitBlameInfo {
   const lines = blame.trim().split('\n');
   lines[0] = `commit ${lines[0]}`;
@@ -27,6 +41,17 @@ export async function runGitBlameCommand(): Promise<
   }
   const activeFile = activeEditor.document.uri;
   const activeLineNumber = activeEditor.selection.active.line;
+
+  const cacheKey = `${activeFile.fsPath}:${activeLineNumber}`;
+  const cached = _gitBlameCache.get(cacheKey);
+  if (cached !== undefined) {
+    return {
+      gitBlameInfo: cached,
+      editor: activeEditor,
+      lineNumber: activeLineNumber
+    };
+  }
+
   const commandArguments = [
     'blame',
     '--porcelain',
@@ -43,6 +68,7 @@ export async function runGitBlameCommand(): Promise<
     const gitBlameCommand = cp.spawn('git', commandArguments, commandOptions);
     gitBlameCommand.stdout.on('data', (response) => {
       const gitBlameInfo = parseGitBlameResponse(response.toString());
+      _gitBlameCache.set(cacheKey, gitBlameInfo);
       resolve({
         gitBlameInfo,
         editor: activeEditor,

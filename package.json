@@ -75,6 +75,12 @@
           "type": "boolean",
           "default": false,
           "description": "Show the commit message in inline message."
+        },
+        "jiralens.jiraCacheTtlSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 0,
+          "description": "How long (in seconds) a fetched Jira issue is kept in memory before being re-fetched from your Jira server. Increase this to reduce network requests; decrease it to see more up-to-date issue details. Set to 0 to keep fetched issues for the entire session without re-fetching. Default: 300 (5 minutes)."
         }
       }
     },

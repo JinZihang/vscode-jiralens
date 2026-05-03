@@ -8,7 +8,11 @@ vi.mock('child_process', () => ({
 import * as cp from 'child_process';
 import * as vscode from 'vscode';
 
-import { runGitBlameCommand } from '../../../src/services/git';
+import {
+  clearGitBlameCache,
+  invalidateGitBlameCache,
+  runGitBlameCommand
+} from '../../../src/services/git';
 
 // A realistic git blame --porcelain output for a single line
 const MOCK_BLAME_PORCELAIN_OUTPUT = `abc123def456abc123def456abc123def456abc1 1 1 1
@@ -39,6 +43,7 @@ function createMockTextEditor(fsPath: string, line: number) {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  clearGitBlameCache();
 });
 
 afterEach(() => {
@@ -111,6 +116,57 @@ describe('runGitBlameCommand', () => {
       'feat: JRL-123 add the status bar item'
     );
     expect(result!.gitBlameInfo.filename).toBe('src/extension.ts');
+  });
+
+  it('returns cached result on repeated call for same file and line without spawning git again', async () => {
+    const mockProcess = createMockChildProcess();
+    vi.mocked(cp.spawn).mockReturnValue(
+      mockProcess as ReturnType<typeof cp.spawn>
+    );
+    (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
+      createMockTextEditor('/workspace/src/extension.ts', 10);
+    vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue({
+      uri: { fsPath: '/workspace' }
+    } as ReturnType<typeof vscode.workspace.getWorkspaceFolder>);
+
+    const firstPromise = runGitBlameCommand();
+    await Promise.resolve();
+    mockProcess.stdout.emit('data', Buffer.from(MOCK_BLAME_PORCELAIN_OUTPUT));
+    const firstResult = await firstPromise;
+
+    const secondResult = await runGitBlameCommand();
+
+    expect(cp.spawn).toHaveBeenCalledTimes(1);
+    expect(secondResult?.gitBlameInfo.summary).toBe(
+      firstResult?.gitBlameInfo.summary
+    );
+  });
+
+  it('spawns git again after the cache entry for the file is invalidated', async () => {
+    const mockProcess1 = createMockChildProcess();
+    const mockProcess2 = createMockChildProcess();
+    vi.mocked(cp.spawn)
+      .mockReturnValueOnce(mockProcess1 as ReturnType<typeof cp.spawn>)
+      .mockReturnValueOnce(mockProcess2 as ReturnType<typeof cp.spawn>);
+    (vscode.window as unknown as Record<string, unknown>).activeTextEditor =
+      createMockTextEditor('/workspace/src/extension.ts', 11);
+    vi.mocked(vscode.workspace.getWorkspaceFolder).mockReturnValue({
+      uri: { fsPath: '/workspace' }
+    } as ReturnType<typeof vscode.workspace.getWorkspaceFolder>);
+
+    const firstPromise = runGitBlameCommand();
+    await Promise.resolve();
+    mockProcess1.stdout.emit('data', Buffer.from(MOCK_BLAME_PORCELAIN_OUTPUT));
+    await firstPromise;
+
+    invalidateGitBlameCache('/workspace/src/extension.ts');
+
+    const secondPromise = runGitBlameCommand();
+    await Promise.resolve();
+    mockProcess2.stdout.emit('data', Buffer.from(MOCK_BLAME_PORCELAIN_OUTPUT));
+    await secondPromise;
+
+    expect(cp.spawn).toHaveBeenCalledTimes(2);
   });
 
   it('rejects when git emits a stderr error', async () => {

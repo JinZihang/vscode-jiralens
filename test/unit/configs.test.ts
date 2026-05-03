@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { workspace } from 'vscode';
 
 import {
+  getJiraCacheTtlSeconds,
   getJiraEmail,
   getJiraProjectKeys,
   getMissingCoreConfigMessages,
@@ -189,6 +190,26 @@ describe('getMissingCoreConfigMessages', () => {
     });
     syncWorkspaceConfiguration();
     expect(getMissingCoreConfigMessages()).toHaveLength(3);
+  });
+});
+
+describe('getJiraCacheTtlSeconds', () => {
+  it('returns the configured value', () => {
+    mockGet.mockReturnValue(600);
+    syncWorkspaceConfiguration();
+    expect(getJiraCacheTtlSeconds()).toBe(600);
+  });
+
+  it('returns 0 when set to 0 (no expiry)', () => {
+    mockGet.mockReturnValue(0);
+    syncWorkspaceConfiguration();
+    expect(getJiraCacheTtlSeconds()).toBe(0);
+  });
+
+  it('returns 300 when the setting is undefined', () => {
+    mockGet.mockReturnValue(undefined);
+    syncWorkspaceConfiguration();
+    expect(getJiraCacheTtlSeconds()).toBe(300);
   });
 });
 
