@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { delay, getNonce, isValidUrl } from '../../src/utils';
+import { debounce, delay, getNonce, isValidUrl } from '../../src/utils';
 
 describe('isValidUrl', () => {
   it('returns true for a valid https URL', () => {
@@ -42,6 +42,58 @@ describe('getNonce', () => {
   it('returns a different value on each call', () => {
     // Technically could collide, but with 62^32 possibilities it is negligible
     expect(getNonce()).not.toBe(getNonce());
+  });
+});
+
+describe('debounce', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('calls the function after the specified delay', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, 100);
+    debounced();
+    expect(fn).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('resets the timer when called again before the delay elapses', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, 100);
+    debounced();
+    vi.advanceTimersByTime(50);
+    debounced();
+    vi.advanceTimersByTime(50);
+    expect(fn).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(50);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls the function only once after a burst of calls', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, 100);
+    debounced();
+    debounced();
+    debounced();
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls the function again after a new call following a completed debounce', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, 100);
+    debounced();
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(1);
+    debounced();
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 });
 

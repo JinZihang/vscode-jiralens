@@ -20,6 +20,13 @@ export function activate(context: vscode.ExtensionContext): void {
 }
 
 function bindEventListeners(context: vscode.ExtensionContext): void {
+  // Debouncing was removed because any interval low enough to feel responsive
+  // (< 200 ms) still fires on every key-repeat (~30 ms), while anything higher
+  // makes deliberate navigation feel sluggish. The correct fix is to cache
+  // git-blame results (F2) and Jira responses (F3) so that repeated onChange
+  // calls are cheap Map lookups rather than subprocess spawns and network
+  // requests. A debounce utility is available in utils.ts if needed once the
+  // caches are in place.
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(() => {
       syncWorkspaceConfiguration();
