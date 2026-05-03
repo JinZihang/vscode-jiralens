@@ -86,6 +86,16 @@ test/
 | `inlineJiraIssueKey`       | boolean  | `true`              | Show Jira issue key                                         |
 | `inlineCommitMessage`      | boolean  | `false`             | Show commit message                                         |
 
+## Working Practices
+
+When making any code change, always:
+
+1. **Check and update tests** — find the corresponding test file(s) in `test/unit/` and add, update, or remove tests to match the new behavior. Never leave tests that assert stale behavior.
+2. **Check and update documentation** — if the change affects configuration keys, architecture patterns, project structure, or public-facing behavior, update the relevant section(s) in this file (`CLAUDE.md`) to reflect the new state.
+3. **Update `package.json` contributions** — if a new `jiralens.*` configuration key is added or removed, keep the `contributes.configuration` block in `package.json` in sync with the table above.
+
+These checks are mandatory, not optional. Do not mark a task complete without verifying all three.
+
 ## Code Style
 
 - **Formatter**: Prettier — 2 spaces, single quotes, semicolons, no trailing commas, LF endings.
