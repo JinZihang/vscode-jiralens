@@ -25,21 +25,17 @@ function bindEventListeners(context: vscode.ExtensionContext): void {
       syncWorkspaceConfiguration();
       onChange();
     }),
-    /**
-     * onDidChangeActiveTextEditor    - change of editor
-     * onDidChangeTextEditorSelection - change of selection
-     * onDidChangeTextDocument        - change of content
-     *
-     * After file A line 1 -> file B:
-     * 1. file B -> file A line 1     - trigger change of editor
-     * 2. file B -> file A line 2     - trigger change of editor and selection
-     */
+    // onDidChangeActiveTextEditor    - change of editor
+    // onDidChangeTextEditorSelection - change of selection
+    // onDidChangeTextDocument        - change of content
+    //
+    // After file A line 1 -> file B:
+    // 1. file B -> file A line 1     - trigger change of editor
+    // 2. file B -> file A line 2     - trigger change of editor and selection
     vscode.window.onDidChangeActiveTextEditor(async () => {
-      /**
-       * This could be triggered before the active line gets updated. Then, the git blame command
-       * will run against a wrong line number and cause inline message to render incorrectly. To
-       * avoid that, wait for a short period of time before requesting the information.
-       */
+      // This could be triggered before the active line gets updated. Then, the git blame command
+      // will run against a wrong line number and cause inline message to render incorrectly. To
+      // avoid that, wait for a short period of time before requesting the information.
       await delay(50);
       onChange();
     }),

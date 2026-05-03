@@ -91,6 +91,13 @@ describe('getJiraIssueKey', () => {
   it('does not match a project key that is not in the configured list', () => {
     expect(getJiraIssueKey('fix: XYZ-999 unrelated project')).toBe('');
   });
+
+  it('returns consistent results across repeated calls (regex cache regression guard)', () => {
+    const msg = 'fix: JRL-42 crash on startup';
+    expect(getJiraIssueKey(msg)).toBe('JRL-42');
+    expect(getJiraIssueKey(msg)).toBe('JRL-42');
+    expect(getJiraIssueKey(msg)).toBe('JRL-42');
+  });
 });
 
 describe('getJiraIssueUrl', () => {
