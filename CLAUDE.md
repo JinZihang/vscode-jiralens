@@ -96,6 +96,8 @@ When making any code change, always:
 
 These checks are mandatory, not optional. Do not mark a task complete without verifying all three.
 
+4. **Never push, publish, or release** — do not run `git push`, `npm publish`, `vsce publish`, `semantic-release`, or any command that delivers changes to a remote or registry. Local commits are fine; remote delivery requires explicit user instruction.
+
 ## Code Style
 
 - **Formatter**: Prettier — 2 spaces, single quotes, semicolons, no trailing commas, LF endings.
